@@ -1,0 +1,181 @@
+.gradle/4.10.3/gc.properties
+.gradle/4.10.3/fileChanges/last-build.bin
+.gradle/4.10.3/fileContent/annotation-processors.bin
+.gradle/4.10.3/fileContent/fileContent.lock
+.gradle/4.10.3/fileHashes/fileHashes.bin
+.gradle/4.10.3/fileHashes/fileHashes.lock
+.gradle/4.10.3/fileHashes/resourceHashesCache.bin
+.gradle/4.10.3/javaCompile/classAnalysis.bin
+.gradle/4.10.3/javaCompile/jarAnalysis.bin
+.gradle/4.10.3/javaCompile/javaCompile.lock
+.gradle/4.10.3/javaCompile/taskHistory.bin
+.gradle/4.10.3/taskHistory/taskHistory.bin
+.gradle/4.10.3/taskHistory/taskHistory.lock
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
+.gradle/buildOutputCleanup/cache.properties
+.gradle/buildOutputCleanup/outputFiles.bin
+.gradle/vcs-1/gc.properties
+run/options.txt
+run/usercache.json
+run/usernamecache.json
+run/config/fml.toml
+run/config/forge-client.toml
+run/config/tdwtf-client.toml
+run/crash-reports/crash-2020-06-12_19.40.02-client.txt
+run/crash-reports/crash-2020-06-12_19.43.13-client.txt
+run/logs/2020-06-12-1.log.gz
+run/logs/2020-06-12-2.log.gz
+run/logs/2020-06-12-3.log.gz
+run/logs/2020-06-12-4.log.gz
+run/logs/2020-06-12-5.log.gz
+run/logs/2020-06-12-6.log.gz
+run/logs/2020-06-12-7.log.gz
+run/logs/2020-06-12-8.log.gz
+run/logs/2020-06-12-9.log.gz
+run/logs/2020-06-12-10.log.gz
+run/logs/2020-06-12-11.log.gz
+run/logs/2020-06-12-12.log.gz
+run/logs/2020-06-12-13.log.gz
+run/logs/2020-06-12-14.log.gz
+run/logs/2020-06-12-15.log.gz
+run/logs/2020-06-12-16.log.gz
+run/logs/2020-06-12-17.log.gz
+run/logs/2020-06-12-18.log.gz
+run/logs/2020-06-12-19.log.gz
+run/logs/2020-06-12-20.log.gz
+run/logs/2020-06-12-21.log.gz
+run/logs/2020-06-12-22.log.gz
+run/logs/2020-06-12-23.log.gz
+run/logs/2020-06-12-24.log.gz
+run/logs/2020-06-12-25.log.gz
+run/logs/2020-06-12-26.log.gz
+run/logs/2020-06-12-27.log.gz
+run/logs/2020-06-12-28.log.gz
+run/logs/2020-06-12-29.log.gz
+run/logs/2020-06-12-30.log.gz
+run/logs/2020-06-12-31.log.gz
+run/logs/2020-06-12-32.log.gz
+run/logs/2020-06-12-33.log.gz
+run/logs/2020-06-12-34.log.gz
+run/logs/2020-06-12-35.log.gz
+run/logs/2020-06-12-36.log.gz
+run/logs/debug-1.log.gz
+run/logs/debug-2.log.gz
+run/logs/debug-3.log.gz
+run/logs/debug-4.log.gz
+run/logs/debug-5.log.gz
+run/logs/debug.log
+run/logs/latest.log
+run/saves/Mod Testing World/icon.png
+run/saves/Mod Testing World/level.dat
+run/saves/Mod Testing World/level.dat_old
+run/saves/Mod Testing World/session.lock
+run/saves/Mod Testing World/advancements/380df991-f603-344c-a090-369bad2a924a.json
+run/saves/Mod Testing World/data/capabilities.dat
+run/saves/Mod Testing World/data/raids.dat
+run/saves/Mod Testing World/playerdata/380df991-f603-344c-a090-369bad2a924a.dat
+run/saves/Mod Testing World/poi/r.-1.-1.mca
+run/saves/Mod Testing World/poi/r.-1.0.mca
+run/saves/Mod Testing World/poi/r.0.-1.mca
+run/saves/Mod Testing World/region/r.-1.-1.mca
+run/saves/Mod Testing World/region/r.-1.-2.mca
+run/saves/Mod Testing World/region/r.-1.0.mca
+run/saves/Mod Testing World/region/r.-2.-1.mca
+run/saves/Mod Testing World/region/r.-2.-2.mca
+run/saves/Mod Testing World/region/r.-2.0.mca
+run/saves/Mod Testing World/region/r.0.-1.mca
+run/saves/Mod Testing World/region/r.0.-2.mca
+run/saves/Mod Testing World/region/r.0.0.mca
+run/saves/Mod Testing World/serverconfig/forge-server.toml
+run/saves/Mod Testing World/stats/380df991-f603-344c-a090-369bad2a924a.json
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsMod.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/blocks/RedstoneInverterBlock.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/blocks/RedstoneInverterBlock$Registration.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/debugging/ForgeLoggerTweaker.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/debugging/ForgeLoggerTweaker$MBELogFilter.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/items/RedstoneAdditionsItemGroup.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/items/RedstoneAdditionsLogoItem.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/items/RedstoneAdditionsLogoItem$Registration.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/items/RedstoneInverterItem.class
+build/classes/java/main/com/github/chaostheeternal/redstone_additions/items/RedstoneInverterItem$Registration.class
+build/createSrgToMcp/output.srg
+build/downloadMCMeta/version.json
+build/downloadMcpConfig/output.zip
+build/extractSrg/output.srg
+build/natives/glfw.dll
+build/natives/glfw.dll.git
+build/natives/glfw.dll.sha1
+build/natives/glfw32.dll
+build/natives/glfw32.dll.git
+build/natives/glfw32.dll.sha1
+build/natives/jemalloc.dll
+build/natives/jemalloc.dll.git
+build/natives/jemalloc.dll.sha1
+build/natives/jemalloc32.dll
+build/natives/jemalloc32.dll.git
+build/natives/jemalloc32.dll.sha1
+build/natives/lwjgl_opengl.dll
+build/natives/lwjgl_opengl.dll.sha1
+build/natives/lwjgl_opengl32.dll
+build/natives/lwjgl_opengl32.dll.sha1
+build/natives/lwjgl_stb.dll
+build/natives/lwjgl_stb.dll.sha1
+build/natives/lwjgl_stb32.dll
+build/natives/lwjgl_stb32.dll.sha1
+build/natives/lwjgl_tinyfd.dll
+build/natives/lwjgl_tinyfd.dll.sha1
+build/natives/lwjgl_tinyfd32.dll
+build/natives/lwjgl_tinyfd32.dll.sha1
+build/natives/lwjgl.dll
+build/natives/lwjgl.dll.git
+build/natives/lwjgl.dll.sha1
+build/natives/lwjgl32.dll
+build/natives/lwjgl32.dll.git
+build/natives/lwjgl32.dll.sha1
+build/natives/OpenAL.dll
+build/natives/OpenAL.dll.git
+build/natives/OpenAL.dll.sha1
+build/natives/OpenAL32.dll
+build/natives/OpenAL32.dll.git
+build/natives/OpenAL32.dll.sha1
+build/natives/SAPIWrapper_x64.dll
+build/natives/SAPIWrapper_x86.dll
+build/natives/META-INF/INDEX.LIST
+build/natives/META-INF/MANIFEST.MF
+build/natives/META-INF/versions/9/module-info.class
+build/resources/main/pack.mcmeta
+build/resources/main/META-INF/mods.toml
+build/resources/main/assets/redstone_additions/blockstates/redstone_inverter.json
+build/resources/main/assets/redstone_additions/lang/en_us.json
+build/resources/main/assets/redstone_additions/models/block/redstone_inverter_haspower.json
+build/resources/main/assets/redstone_additions/models/block/redstone_inverter_nopower.json
+build/resources/main/assets/redstone_additions/models/item/redstone_inverter.json
+build/resources/main/assets/redstone_additions/textures/items/redstone_inverter.png
+build/resources/main/data/creeper_repellent/loot_tables/blocks/golden_cat_statue.json
+bin/main/pack.mcmeta
+bin/main/META-INF/mods.toml
+bin/main/assets/redstone_additions/blockstates/redstone_inverter_block.json
+bin/main/assets/redstone_additions/lang/en_us.json
+bin/main/assets/redstone_additions/models/block/redstone_inverter_block_haspower.json
+bin/main/assets/redstone_additions/models/block/redstone_inverter_block_nopower.json
+bin/main/assets/redstone_additions/models/block/redstone_inverter_block_test.json
+bin/main/assets/redstone_additions/models/item/redstone_inverter_item.json
+bin/main/assets/redstone_additions/textures/items/redstone_inverter_Item.png
+bin/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsMod.class
+bin/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsModChannel.class
+bin/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsModClient.class
+bin/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsModClient$Registration.class
+bin/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsModShared.class
+bin/main/com/github/chaostheeternal/redstone_additions/RedstoneAdditionsModShared$Registration.class
+bin/main/com/github/chaostheeternal/redstone_additions/blocks/RedstoneInverterBlock.class
+bin/main/com/github/chaostheeternal/redstone_additions/blocks/RedstoneInverterBlock$Registration.class
+bin/main/com/github/chaostheeternal/redstone_additions/debugging/ForgeLoggerTweaker.class
+bin/main/com/github/chaostheeternal/redstone_additions/debugging/ForgeLoggerTweaker$MBELogFilter.class
+bin/main/com/github/chaostheeternal/redstone_additions/items/RedstoneInverterItem.class
+bin/main/com/github/chaostheeternal/redstone_additions/items/RedstoneInverterItem$Registration.class
+bin/main/data/redstone_additions/loot_tables/blocks/redstone_inverter_block.json
+bin/main/data/redstone_additions/recipes/redstone_inverter_item.json
+.settings/org.eclipse.buildship.core.prefs
+.settings/org.eclipse.jdt.core.prefs
+.vscode/launch.json
+.vscode/settings.json

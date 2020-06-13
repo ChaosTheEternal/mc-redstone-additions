@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[31,)"
+#issueTrackerURL="https://github.com/ChaosTheEternal/mc-redstone-additions/issues"
+[[mods]]
+modId="redstone_additions"
+version="${file.jarVersion}"
+displayName="Redstone Additions"
+#updateJSONURL=""
+displayURL="https://github.com/ChaosTheEternal/mc-redstone-additions/"
+#logoFile="examplemod.png" #optional
+#credits="" #optional
+authors="ChaosTheEternal"
+description='''
+WIP mod that adds new redstone components to compact some circuits/items.
+'''
+[[dependencies.redstone_additions]]
+    modId="forge"
+    mandatory=true
+    versionRange="[31,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.redstone_additions]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"
