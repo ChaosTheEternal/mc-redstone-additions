@@ -11,8 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 
 import java.util.function.Supplier;
+
+import com.github.chaostheeternal.redstone_additions.blocks.RedstoneInverterBlock;
 
 @OnlyIn(Dist.CLIENT)
 public class RedstoneAdditionsModClient {
@@ -37,6 +41,11 @@ public class RedstoneAdditionsModClient {
 		@SubscribeEvent
 		public static void registerClientSetup(FMLClientSetupEvent e) {
 			LOGGER.debug( "{}::registerClientSetup", Registration.class.getName() );
+		}
+		
+		@SubscribeEvent
+		public static void onClientSetupEvent(FMLClientSetupEvent event) {
+			RenderTypeLookup.setRenderLayer(RedstoneInverterBlock.BLOCK, RenderType.getCutout());
 		}
 	}
 }

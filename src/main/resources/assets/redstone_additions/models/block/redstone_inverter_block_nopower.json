@@ -4,7 +4,7 @@
         "particle": "block/repeater_on",
         "slab": "block/smooth_stone",
         "top": "block/repeater",
-        "lit": "block/redstone_torch_on",
+        "lit": "block/redstone_torch",
         "unlit": "block/redstone_torch_off"
     },
     "elements": [
