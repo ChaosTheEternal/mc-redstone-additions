@@ -86,10 +86,10 @@ public class RedstoneInverterBlock extends Block {
 	@Override
 	public boolean isValidPosition( BlockState state, IWorldReader world, BlockPos pos ) {
 		return canBePlacedOn(state, world, pos.offset(Direction.DOWN));
-	}
-    //TODO: Need to figure out why the copied model doesn't seem to work (can't find "redstone_torch_on" and doesn't have transparency)
-    //TODO: Need to change the model to look closer to a minifed torch off a "wall" and redstone out.
-    //TODO: Need to change the item icon to look closer to the new model
+    }
+    
+    //TODO: Need to make this figure out if it's not on a block that could hold it and break
+    //TODO: Need to make this not block water/break when water hits it
 
     private RedstoneInverterBlock() {
         super(
@@ -105,12 +105,26 @@ public class RedstoneInverterBlock extends Block {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, World worldIn, BlockPos pos, Random rand) {
-        if (!state.get(POWERED)) {
-            //TODO: Only need to do this once, on the torch, and only when it isn't powered (so the torch is on and the block is outputting power)
-            double dx = (double)pos.getX() + 0.5D + ((double)rand.nextFloat() - 0.5D) * 0.2D;
-            double dy = (double)((float)pos.getY() + 0.375F); //6 pixels above bottom, which should be mid-point of the torch tip
-            double dz = (double)pos.getZ() + 0.5D + ((double)rand.nextFloat() - 0.5D) * 0.2D;
-
+        if (!state.get(POWERED) && rand.nextFloat() > 0.249D) { //Only give a puff 75% of the time when giving off power
+            double dx, dz, dy = (double)pos.getY() + (rand.nextFloat() * 0.125D + 0.3125D); //Y won't change, regardless of facing
+            switch (state.get(FACING)) {
+                case NORTH:
+                    dx = (double)pos.getX() + (rand.nextFloat() * 0.1875D + 0.4375D);
+                    dz = (double)pos.getZ() + (1.0D - (rand.nextFloat() * 0.1875D + 0.5D));
+                    break;
+                case EAST:
+                    dx = (double)pos.getX() + (rand.nextFloat() * 0.1875D + 0.5D);
+                    dz = (double)pos.getZ() + (rand.nextFloat() * 0.1875D + 0.4375D);
+                    break;
+                case WEST:
+                    dx = (double)pos.getX() + (1.0D - (rand.nextFloat() * 0.1875D + 0.5D));
+                    dz = (double)pos.getZ() + (rand.nextFloat() * 0.1875D + 0.4375D);
+                    break;
+                default: //includes SOUTH
+                    dx = (double)pos.getX() + (rand.nextFloat() * 0.1875D + 0.4375D);
+                    dz = (double)pos.getZ() + (rand.nextFloat() * 0.1875D + 0.5D);
+                    break;
+            }
             float f1 = 1.0F;
             float f2 = Math.max(0.0F, 0.2F);
             float f3 = Math.max(0.0F, -0.1F);
@@ -119,12 +133,23 @@ public class RedstoneInverterBlock extends Block {
         }
     }
     @Override
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+        checkIfPowerChanged(state, world, pos);
+    }
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        if (oldState.getBlock() != state.getBlock() && !world.isRemote()) { checkIfPowerChanged(state, world, pos); }
+    }
+    public void checkIfPowerChanged(BlockState state, World world, BlockPos pos) {
         Direction inputDir = state.get(FACING);
         //NOTE: This may seem backwards, but we're matching how Redstone Repeaters work.  They "face" opposite the direction you're facing when you place them.
         // So, they "face" the input, so you want to check one block forward from the way they're facing, but the power at the opposite side (so the border between input and this).
-        BlockState newState = state.with(POWERED, worldIn.isSidePowered(pos.offset(inputDir), inputDir.getOpposite()));
-        if (newState != state) { worldIn.setBlockState(pos, newState, Constants.BlockFlags.DEFAULT_AND_RERENDER); }
+        BlockState newState = state.with(POWERED, world.isSidePowered(pos.offset(inputDir), inputDir.getOpposite()));
+        if (newState != state) { 
+            world.setBlockState(pos, newState, Constants.BlockFlags.DEFAULT_AND_RERENDER); 
+            BlockPos updatePos = pos.offset(inputDir.getOpposite());
+            world.notifyNeighborsOfStateChange(updatePos, world.getBlockState(updatePos).getBlock()); //Tell any block on the output side that strong power has changed
+        }
     }
 
     @Override
@@ -160,7 +185,6 @@ public class RedstoneInverterBlock extends Block {
     public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
         return false;
     }
-    //TODO: Figure out why this gets power "stuck" on the output despite the input changing
 
     @Override
     public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
@@ -186,7 +210,6 @@ public class RedstoneInverterBlock extends Block {
             return;
         }
     }
-    //TODO: Need to make this figure out if it's not on a block that could hold it and break
 
     @Mod.EventBusSubscriber(modid = RedstoneAdditionsMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Registration {
