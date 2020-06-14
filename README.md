@@ -10,7 +10,7 @@ A single block replacement for converting an on signal to off, originally by fee
 
 ## Planned Additions
 ### Instant Off Redstone Repeater
-A redstone repeater modification that acts like a normal redstone repeater except there is always no delay when "repeating" no more power being received.
+A redstone repeater modification that acts like a normal redstone repeater getting power, but with no delay when it stops getting powered.
 
 ### Vertical Redstone
 Some option to make running redstone vertically (up or down) easier and more compact.

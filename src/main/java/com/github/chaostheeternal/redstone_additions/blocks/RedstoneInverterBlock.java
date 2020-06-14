@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.github.chaostheeternal.redstone_additions.RedstoneAdditionsMod;
+import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -52,7 +54,7 @@ public class RedstoneInverterBlock extends Block {
         MaterialColor.LIGHT_GRAY, // color
         false,  // isLiquid
         false,  // isSolid
-        true,   // doesBlockMovement
+        false,  // doesBlockMovementOfLiquids
         false,  // isOpaque
         true,   // requiresNoTool
         false,  // canBurn
@@ -61,14 +63,16 @@ public class RedstoneInverterBlock extends Block {
     );
     public static final RedstoneInverterBlock BLOCK = new RedstoneInverterBlock();
 
+    //TODO: Why does it not realize it's getting powered by redstone lines it attached to when placed?
+
 	public static final VoxelShape SHAPE = Block.makeCuboidShape(0.D, 0.D, 0.D, 16.D, 2.D, 16.D);
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+	public boolean allowsMovement(BlockState state, IBlockReader world, BlockPos pos, PathType type) {
 		return true;
     }
 
@@ -87,9 +91,6 @@ public class RedstoneInverterBlock extends Block {
 	public boolean isValidPosition( BlockState state, IWorldReader world, BlockPos pos ) {
 		return canBePlacedOn(state, world, pos.offset(Direction.DOWN));
     }
-    
-    //TODO: Need to make this figure out if it's not on a block that could hold it and break
-    //TODO: Need to make this not block water/break when water hits it
 
     private RedstoneInverterBlock() {
         super(
@@ -104,7 +105,7 @@ public class RedstoneInverterBlock extends Block {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState state, World worldIn, BlockPos pos, Random rand) {
+    public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
         if (!state.get(POWERED) && rand.nextFloat() > 0.249D) { //Only give a puff 75% of the time when giving off power
             double dx, dz, dy = (double)pos.getY() + (rand.nextFloat() * 0.125D + 0.3125D); //Y won't change, regardless of facing
             switch (state.get(FACING)) {
@@ -129,26 +130,33 @@ public class RedstoneInverterBlock extends Block {
             float f2 = Math.max(0.0F, 0.2F);
             float f3 = Math.max(0.0F, -0.1F);
             RedstoneParticleData particle = new RedstoneParticleData(f1, f2, f3, 1.0F);
-            worldIn.addParticle(particle, dx, dy, dz, 0.0D, 0.0D, 0.0D);
+            world.addParticle(particle, dx, dy, dz, 0.0D, 0.0D, 0.0D);
         }
     }
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        checkIfPowerChanged(state, world, pos);
+        if (fromPos.equals(pos.offset(state.get(FACING)))) checkIfPowerChanged(state, world, pos); //If the change is from the input side, check if the power has changed
+        if (fromPos.equals(pos.offset(Direction.DOWN)) && !canBePlacedOn(state, world, fromPos)) world.destroyBlock(pos, true); // If the change came from below, check if we're still on a valid block
     }
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
         if (oldState.getBlock() != state.getBlock() && !world.isRemote()) { checkIfPowerChanged(state, world, pos); }
     }
+    private static int POWER_CHANGED_ITERATION = 0; //This is for a burnout circuit, in case you power the inverter with itself
     public void checkIfPowerChanged(BlockState state, World world, BlockPos pos) {
         Direction inputDir = state.get(FACING);
         //NOTE: This may seem backwards, but we're matching how Redstone Repeaters work.  They "face" opposite the direction you're facing when you place them.
         // So, they "face" the input, so you want to check one block forward from the way they're facing, but the power at the opposite side (so the border between input and this).
-        BlockState newState = state.with(POWERED, world.isSidePowered(pos.offset(inputDir), inputDir.getOpposite()));
-        if (newState != state) { 
+        boolean shouldBePowered = world.isSidePowered(pos.offset(inputDir), inputDir.getOpposite()) || 
+                                  (world.getBlockState(pos.offset(inputDir)).getBlock() instanceof RedstoneWireBlock && world.isBlockPowered(pos.offset(inputDir)));
+        //There's probably a better way to check if the adjacent block is redstone wire and powered to know if I'm supposed to be powered
+        BlockState newState = state.with(POWERED, shouldBePowered); //BUG: Powered redstone dust doesn't appear to say the side is powered because it hasn't necessarily attached when a block is placed
+        if (newState != state && POWER_CHANGED_ITERATION < 3 && newState.get(POWERED)) {
+            POWER_CHANGED_ITERATION += 1; 
             world.setBlockState(pos, newState, Constants.BlockFlags.DEFAULT_AND_RERENDER); 
             BlockPos updatePos = pos.offset(inputDir.getOpposite());
             world.notifyNeighborsOfStateChange(updatePos, world.getBlockState(updatePos).getBlock()); //Tell any block on the output side that strong power has changed
+            POWER_CHANGED_ITERATION -= 1;
         }
     }
 
@@ -204,9 +212,9 @@ public class RedstoneInverterBlock extends Block {
         ); //Place it facing the same horizontal direction you are
     }
     @Override
-    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if (!state.isValidPosition(worldIn, pos)) {
-            worldIn.destroyBlock(pos, true);
+    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
+        if (!state.isValidPosition(world, pos)) {
+            world.destroyBlock(pos, true);
             return;
         }
     }
