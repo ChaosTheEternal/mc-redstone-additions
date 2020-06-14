@@ -147,8 +147,8 @@ public class RedstoneInverterBlock extends Block {
         boolean shouldBePowered = world.isSidePowered(pos.offset(inputDir), inputDir.getOpposite()) || 
                                   (world.getBlockState(pos.offset(inputDir)).getBlock() instanceof RedstoneWireBlock && world.isBlockPowered(pos.offset(inputDir)));
         //There's probably a better way to check if the adjacent block is redstone wire and powered to know if I'm supposed to be powered
-        BlockState newState = state.with(POWERED, shouldBePowered); //BUG: Powered redstone dust doesn't appear to say the side is powered because it hasn't necessarily attached when a block is placed
-        if (newState != state && POWER_CHANGED_ITERATION < 3 && newState.get(POWERED)) {
+        BlockState newState = state.with(POWERED, shouldBePowered);
+        if (newState != state && POWER_CHANGED_ITERATION < 3) {
             POWER_CHANGED_ITERATION += 1; 
             world.setBlockState(pos, newState, Constants.BlockFlags.DEFAULT_AND_RERENDER); 
             BlockPos updatePos = pos.offset(inputDir.getOpposite());
