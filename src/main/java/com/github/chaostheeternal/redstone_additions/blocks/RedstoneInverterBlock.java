@@ -7,7 +7,6 @@ import com.github.chaostheeternal.redstone_additions.RedstoneAdditionsMod;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -62,8 +61,6 @@ public class RedstoneInverterBlock extends Block {
         PushReaction.DESTROY // pushReaction
     );
     public static final RedstoneInverterBlock BLOCK = new RedstoneInverterBlock();
-
-    //TODO: Why does it not realize it's getting powered by redstone lines it attached to when placed?
 
 	public static final VoxelShape SHAPE = Block.makeCuboidShape(0.D, 0.D, 0.D, 16.D, 2.D, 16.D);
 	@Override
