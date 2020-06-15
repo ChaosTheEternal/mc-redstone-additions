@@ -1,6 +1,7 @@
-.gradle/*
-run/*
-build/*
-bin/*
-.settings/*
-.vscode/*
+.gradle
+run
+build
+bin
+.settings
+.vscode
+.classpath
