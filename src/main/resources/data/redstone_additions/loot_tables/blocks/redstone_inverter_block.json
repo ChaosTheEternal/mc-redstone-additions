@@ -10,6 +10,9 @@
 				"source": "block_entity"
 			} ],
 			"name": "redstone_additions:redstone_inverter_item"
-		} ]
+		} ],
+        "conditions": [ {
+            "condition": "survives_explosion"
+        } ]
 	} ]
 }

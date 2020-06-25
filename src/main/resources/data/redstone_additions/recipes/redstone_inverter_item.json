@@ -10,6 +10,7 @@
         "R": { "item": "redstone" }
 	},
 	"result": {
-		"item": "redstone_additions:redstone_inverter_item"
+		"item": "redstone_additions:redstone_inverter_item",
+		"count": 1
 	}
 }

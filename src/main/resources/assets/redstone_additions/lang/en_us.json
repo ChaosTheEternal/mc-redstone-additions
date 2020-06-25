@@ -1,3 +1,4 @@
 {
-    "block.redstone_additions.redstone_inverter_block": "Redstone Inverter"
+    "block.redstone_additions.redstone_inverter_block": "Redstone Inverter",
+    "block.redstone_additions.instant_off_repeater_block": "Instant Off Repeater"
 }

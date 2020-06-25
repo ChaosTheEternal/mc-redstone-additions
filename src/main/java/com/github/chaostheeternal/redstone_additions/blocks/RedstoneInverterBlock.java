@@ -43,9 +43,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Random;
 
 public class RedstoneInverterBlock extends Block {
+    //TODO: Depending on how well the InstantOffRepeaterBlocks works, maybe rework this guy to use RedstoneDiodeBlock as well
+    // though how it outputs power has to be flipped and the animateTick also
     private static final Logger LOGGER = LogManager.getLogger();    
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty POWERED = BooleanProperty.create("powered");
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final String REGISTRY_NAME = "redstone_inverter_block";
     public static final ResourceLocation RESOURCE_LOCATION = new ResourceLocation(RedstoneAdditionsMod.MOD_ID, REGISTRY_NAME);
     public static final RegistryObject<RedstoneInverterBlock> REGISTRY_OBJECT = RegistryObject.of(RESOURCE_LOCATION, ForgeRegistries.BLOCKS);

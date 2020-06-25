@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[31,)"
-#issueTrackerURL="https://github.com/ChaosTheEternal/mc-redstone-additions/issues"
+issueTrackerURL="https://github.com/ChaosTheEternal/mc-redstone-additions/issues"
 [[mods]]
 modId="redstone_additions"
 version="${file.jarVersion}"

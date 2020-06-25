@@ -24,11 +24,8 @@ public class RedstoneInverterItem extends BlockItem {
     public static final RedstoneInverterItem ITEM = new RedstoneInverterItem();
 
     private RedstoneInverterItem() {
-        super(
-            RedstoneInverterBlock.BLOCK,
-            new Properties().group(ItemGroup.REDSTONE)
-        ); //I'm a redstone block, add me to that group
-        setRegistryName(RESOURCE_LOCATION);
+        super(RedstoneInverterBlock.BLOCK, new Properties().maxStackSize(64).group(ItemGroup.REDSTONE));
+        this.setRegistryName(RESOURCE_LOCATION);
     }
 
 	@Mod.EventBusSubscriber(modid = RedstoneAdditionsMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

@@ -1,0 +1,8 @@
+{
+    "type": "crafting_shapeless",
+    "ingredients": [ { "tag": "minecraft:repeater" } ],
+    "result": { 
+        "item": "redstone_additions:instant_off_repeater_item", 
+        "count": 1 
+    }
+}

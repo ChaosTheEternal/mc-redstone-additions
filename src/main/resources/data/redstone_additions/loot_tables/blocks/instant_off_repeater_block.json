@@ -1,0 +1,18 @@
+{
+    "type": "block",
+    "pools": [ {
+        "name": "instant_off_repeater_block",
+        "rolls": 1,
+        "entries": [ {
+            "type": "item",
+			"functions": [ {
+				"function": "copy_name",
+				"source": "block_entity"
+			} ],
+            "name": "redstone_additions:instant_off_repeater_item"
+        } ],
+        "conditions": [ {
+            "condition": "survives_explosion"
+        } ]
+    } ]
+}

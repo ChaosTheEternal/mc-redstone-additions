@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 
 import java.util.function.Supplier;
 
+import com.github.chaostheeternal.redstone_additions.blocks.InstantOffRepeaterBlock;
 import com.github.chaostheeternal.redstone_additions.blocks.RedstoneInverterBlock;
 
 @OnlyIn(Dist.CLIENT)
@@ -46,6 +47,7 @@ public class RedstoneAdditionsModClient {
 		@SubscribeEvent
 		public static void onClientSetupEvent(FMLClientSetupEvent event) {
 			RenderTypeLookup.setRenderLayer(RedstoneInverterBlock.BLOCK, RenderType.getCutout());
+			RenderTypeLookup.setRenderLayer(InstantOffRepeaterBlock.BLOCK, RenderType.getCutout());
 		}
 	}
 }
