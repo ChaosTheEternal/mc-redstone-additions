@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "redstone_additions:items/redstone_inverter_item"
+        "layer0": "redstone_additions:items/instant_off_repeater_item"
     }
 }
