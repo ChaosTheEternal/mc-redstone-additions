@@ -2,6 +2,7 @@
     "ambientocclusion": false,
     "textures": {
 		"line": "block/redstone_dust_line0",
+        "overlay": "block/redstone_dust_overlay",
         "particle": "block/repeater_on",
         "slab": "block/smooth_stone",
         "top": "redstone_additions:block/instant_off_repeater_on",
@@ -61,11 +62,20 @@
         },
 		{
 			"from": [6, 7, 4],
-			"to": [10, 7, 8],
-			"rotation": {"angle": 0, "axis": "y", "origin": [15, 14, 12]},
+            "to": [10, 7, 8],
+            "shade": false,
 			"faces": {
 				"up": {"uv": [6, 8, 10, 12], "texture": "#line", "tintindex": 0 },
-				"down": {"uv": [6, 8, 10, 12], "texture": "#line", "tintindex": 0}
+				"down": {"uv": [6, 8, 10, 12], "texture": "#line", "tintindex": 0 }
+			}
+		},
+		{
+			"from": [6, 7, 4],
+            "to": [10, 7, 8],
+            "shade": false,
+			"faces": {
+				"up": {"uv": [6, 8, 10, 12], "texture": "#overlay"},
+				"down": {"uv": [6, 8, 10, 12], "texture": "#overlay"}
 			}
 		}
     ]

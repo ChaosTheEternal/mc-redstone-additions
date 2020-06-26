@@ -48,6 +48,7 @@ public class RedstoneAdditionsModClient {
 		public static void onClientSetupEvent(FMLClientSetupEvent event) {
 			RenderTypeLookup.setRenderLayer(RedstoneInverterBlock.BLOCK, RenderType.getCutout());
 			RenderTypeLookup.setRenderLayer(InstantOffRepeaterBlock.BLOCK, RenderType.getCutout());
+			Minecraft.getInstance().getBlockColors().register((state, world, pos, tint) -> { return InstantOffRepeaterBlock.lineColorMultiplier(state.get(InstantOffRepeaterBlock.POWERED)); }, InstantOffRepeaterBlock.BLOCK);
 		}
 	}
 }

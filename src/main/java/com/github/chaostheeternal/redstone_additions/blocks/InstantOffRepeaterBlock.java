@@ -133,4 +133,13 @@ public class InstantOffRepeaterBlock extends RedstoneDiodeBlock {
             e.getRegistry().register(BLOCK);
         }
     }
+    
+    @OnlyIn(Dist.CLIENT)
+    public static int lineColorMultiplier(boolean isPowered) {
+        if (isPowered) {
+            return -16777216 | 255 << 16 | 51 << 8 | 0; 
+        } else {
+            return -16777216 | 77 << 16 | 0 << 8 | 0;
+        }
+    }
 }
