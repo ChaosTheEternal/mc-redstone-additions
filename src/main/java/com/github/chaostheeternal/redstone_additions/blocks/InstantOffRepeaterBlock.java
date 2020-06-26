@@ -20,6 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -43,6 +44,8 @@ public class InstantOffRepeaterBlock extends RedstoneDiodeBlock {
         this.setRegistryName(RESOURCE_LOCATION);
         this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(DELAY, Integer.valueOf(1)));
     }
+
+    //TODO: Consider revisiting the "locked" capability of repeaters
 
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -103,6 +106,13 @@ public class InstantOffRepeaterBlock extends RedstoneDiodeBlock {
           worldIn.setBlockState(pos, state.cycle(DELAY), 3);
           return ActionResultType.SUCCESS;
        }
+    }
+    
+    @Override
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+        if (side == null) return false; //This seems to fire if redstone is placed on a neighboring block on a different Y
+        Direction myFacing = state.get(HORIZONTAL_FACING);
+        return (myFacing == side || myFacing == side.getOpposite()); //Input is the way this block is facing, output is opposite the way this block is facing
     }
 
     @Override
