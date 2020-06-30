@@ -1,0 +1,22 @@
+Ideas for:
+    Signal Extended Observer
+    * Use the observer mostly as-is, but give it a right click effect like a repeater to toggle the signal length (from 1 to 4)
+    * The setting is just the length of the pulse, 1 is a 1-tick pulse (same as normal observer) and 4 is a 4-tick pulse, and in between, etc.
+    * If there would be another update to signal while it's actively outputting an extended pulse, it just resets the internal counter and continues the pulse
+
+    Vertical Redstone Wiring
+    * Like an end rod (vertical) or chain in how it can be placed
+    * If it has a solid block underneath, it also can be hooked into redstone dust along the ground
+    * Can only give power up and down, except for the "bottom" block can give it in all directions
+        * Can look at the Redstone Dust logic for how to determine the "hit" area for this base block
+    * Works like redstone dust otherwise and has signal drop-off
+        * Do I then need to consider a "vertical redstone repeater" to help with this?
+
+    Configurable Pistons
+    * Will have an interface when interacted with, like a chest or furnace
+    * On one side, you can put in (up to 4? or more?) sticks/pistons/whatever to specify how far the piston extends
+    * On the other, you can put in up to the same number of slime balls/slime blocks to specify how many blocks in a line it can pull
+    * The piston face will either need a specific graphic to support both or I'll have to see if you can override the model or a texture
+        * If no slime, use the regular piston face, if slime, use the sticky piston face
+    * Don't know if I can "fix" it so redstone dust doesn't break when the piston state changes and the dust is on any side except the front
+        * Meaning, the dust is going along the side or back, obviously it should break if it's on the side that pushes
