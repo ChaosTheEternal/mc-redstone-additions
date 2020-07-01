@@ -1,0 +1,6 @@
+{
+    "parent": "redstone_additions:block/signal_extended_observer_3tick",
+    "textures": {
+        "bottom": "block/observer_back_on"
+    }
+}

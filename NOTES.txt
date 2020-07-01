@@ -1,14 +1,12 @@
 Ideas for:
     Signal Extended Observer
-    * Use the observer mostly as-is, but give it a right click effect like a repeater to toggle the signal length (from 1 to 4)
-    * The setting is just the length of the pulse, 1 is a 1-tick pulse (same as normal observer) and 4 is a 4-tick pulse, and in between, etc.
-    * If there would be another update to signal while it's actively outputting an extended pulse, it just resets the internal counter and continues the pulse
-    * Recipe?
-        * Normal observer recipe except a repeater instead of one of the redstone dusts
+    * Can I hide the "countdown" property?  Or make it truly a private property of the block?
 
     Vertical Redstone Wiring
-    * Like an end rod (vertical) or chain in how it can be placed
+    * Like an end rod (except vertical only) or chain in how it can be placed
     * If it has a solid block underneath, it also can be hooked into redstone dust along the ground
+        * How can I have it tie to redstone dust at higher levels adjacent to the vertical wiring?
+        * Or should I just leave it as strongly powering whatever block is at the top and let the player deal with it?
     * Can only give power up and down, except for the "bottom" block can give it in all directions
         * Can look at the Redstone Dust logic for how to determine the "hit" area for this base block
     * Works like redstone dust otherwise and has signal drop-off

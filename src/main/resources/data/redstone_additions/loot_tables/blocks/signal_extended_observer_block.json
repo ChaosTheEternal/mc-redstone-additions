@@ -1,0 +1,18 @@
+{
+    "type": "block",
+    "pools": [ {
+        "name": "signal_extended_observer_block",
+        "rolls": 1,
+        "entries": [ {
+            "type": "item",
+			"functions": [ {
+				"function": "copy_name",
+				"source": "block_entity"
+			} ],
+            "name": "redstone_additions:signal_extended_observer_item"
+        } ],
+        "conditions": [ {
+            "condition": "survives_explosion"
+        } ]
+    } ]
+}

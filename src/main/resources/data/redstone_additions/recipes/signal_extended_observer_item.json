@@ -1,0 +1,26 @@
+{
+    "type": "crafting_shaped",
+    "pattern": [
+      "###",
+      "DRQ",
+      "###"
+    ],
+    "key": {
+      "Q": {
+        "item": "quartz"
+      },
+      "D": {
+        "item": "redstone"
+      },
+      "R": {
+        "item": "repeater"
+      },
+      "#": {
+        "item": "cobblestone"
+      }
+    },
+    "result": {
+      "item": "redstone_additions:signal_extended_observer_item",
+      "count": 1
+    }
+  }

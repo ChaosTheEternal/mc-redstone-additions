@@ -100,12 +100,12 @@ public class InstantOffRepeaterBlock extends RedstoneDiodeBlock {
     }
     
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-       if (!player.abilities.allowEdit) {
-          return ActionResultType.PASS;
-       } else {
-          worldIn.setBlockState(pos, state.cycle(DELAY), 3);
-          return ActionResultType.SUCCESS;
-       }
+        if (!player.abilities.allowEdit) {
+            return ActionResultType.PASS;
+        } else {
+            worldIn.setBlockState(pos, state.cycle(DELAY), 3);
+            return ActionResultType.SUCCESS;
+        }
     }
     
     @Override

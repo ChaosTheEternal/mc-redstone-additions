@@ -13,10 +13,10 @@ A redstone repeater modification that has the normal delay of an unlocked redsto
 
 May revisit the ability to lock this repeater at a later date.  May revisit the crafting recipe.
 
-## Planned Additions
 ### Signal Extended Observer
-A modified observer that outputs a signal for more than one tick.
+A modified observer that can output a signal for more than one tick.
 
+## Planned Additions
 ### Configurable Pistons
 A modification of pistons that can be configured to have more than one block of reach and logic to also pull multiple blocks as if they were Slime or Honey blocks.
 
