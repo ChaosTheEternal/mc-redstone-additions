@@ -2,6 +2,15 @@ Ideas for:
     Signal Extended Observer
     * Can I hide the "countdown" property?  Or make it truly a private property of the block?
 
+    Glaze Container
+    * Need to lift @error's Illusion Block: https://bitbucket.org/errorx666/tdwtf-minecraft/src/d6b10a9a64efb2417e32df50a21e067e421652fd/src/main/java/net/error_unlimited/tdwtf_minecraft/blocks/IllusionBlock.java?at=master
+        * Main differences:
+            * This block is always solid, even when filled
+            * IDEA: Once filled, it stops allowing player interactions (so placing blocks against it doesn't require right clicking)
+        * Only lifting the "emulated block" stuff, all the other container logic I need to do stock using MCP mappings
+        * Means it needs to have a blockstate model when empty
+        * Can that work?  I think @error's works because he doesn't have a blockstate at all.
+
     Vertical Redstone Wiring
     * Like an end rod (except vertical only) or chain in how it can be placed
     * If it has a solid block underneath, it also can be hooked into redstone dust along the ground

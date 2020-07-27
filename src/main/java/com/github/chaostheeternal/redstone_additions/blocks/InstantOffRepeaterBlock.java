@@ -42,7 +42,7 @@ public class InstantOffRepeaterBlock extends RedstoneDiodeBlock {
     protected InstantOffRepeaterBlock(Block.Properties properties) {
         super(properties);
         this.setRegistryName(RESOURCE_LOCATION);
-        this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(DELAY, Integer.valueOf(1)));
+        this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(POWERED, false).with(DELAY, 1));
     }
 
     //TODO: Consider revisiting the "locked" capability of repeaters
@@ -71,9 +71,9 @@ public class InstantOffRepeaterBlock extends RedstoneDiodeBlock {
             boolean isPowered = state.get(POWERED);
             boolean sbPowered = this.shouldBePowered(world, pos, state);
             if (isPowered && !sbPowered) {
-                world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
+                world.setBlockState(pos, state.with(POWERED, false), 2);
             } else if (!isPowered) {
-                world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+                world.setBlockState(pos, state.with(POWERED, true), 2);
                 if (!sbPowered) {
                     world.getPendingBlockTicks().scheduleTick(pos, this, this.getDelay(state), TickPriority.VERY_HIGH);
                 }

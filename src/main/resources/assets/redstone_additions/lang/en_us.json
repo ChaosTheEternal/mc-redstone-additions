@@ -1,5 +1,6 @@
 {
     "block.redstone_additions.redstone_inverter_block": "Redstone Inverter",
     "block.redstone_additions.instant_off_repeater_block": "Instant Off Repeater",
-    "block.redstone_additions.signal_extended_observer_block": "Signal Extended Observer"
+    "block.redstone_additions.signal_extended_observer_block": "Signal Extended Observer",
+    "block.redstone_additions.glaze_container_block": "Glazed Container"
 }

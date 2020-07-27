@@ -17,6 +17,9 @@ May revisit the ability to lock this repeater at a later date.
 A modified observer that can output a signal for more than one tick.
 
 ## Planned Additions
+### Glaze Container
+A single block container that appears and mostly works like the block inserted but makes the block act like Glazed Terracotta and doesn't get pulled by Slime/Honey blocks.
+
 ### Vertical Redstone Wiring
 Some option to make running redstone vertically (up and down) easier and more compact.  Like a "redstone ladder" except it can also transmit power down.
 

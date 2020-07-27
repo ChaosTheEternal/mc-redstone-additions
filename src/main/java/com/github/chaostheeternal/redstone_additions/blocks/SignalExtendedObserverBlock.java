@@ -38,7 +38,7 @@ public class SignalExtendedObserverBlock extends ObserverBlock {
     protected SignalExtendedObserverBlock(Block.Properties properties) {
         super(properties);
         this.setRegistryName(RESOURCE_LOCATION);
-        this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.SOUTH).with(POWERED, Boolean.valueOf(false)).with(DELAY, Integer.valueOf(1)));
+        this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.SOUTH).with(POWERED, false).with(DELAY, 1));
     }
 
     @Override
@@ -50,13 +50,13 @@ public class SignalExtendedObserverBlock extends ObserverBlock {
         if (state.get(POWERED)) { //Decrement the countdown, and if we hit 0, turn this block back off
             int newCount = state.get(COUNTDOWN) - 1;
             if (newCount <= 0) {
-                worldIn.setBlockState(pos, state.with(COUNTDOWN, 0).with(POWERED, Boolean.valueOf(false)), 2);
+                worldIn.setBlockState(pos, state.with(COUNTDOWN, 0).with(POWERED, false), 2);
             } else {
                 worldIn.setBlockState(pos, state.with(COUNTDOWN, newCount), 2);
                 worldIn.getPendingBlockTicks().scheduleTick(pos, this, 2);
             }
         } else { //Setting the countdown is done in updatePostPlacement, so I don't have to deal with setting it here
-            worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+            worldIn.setBlockState(pos, state.with(POWERED, true), 2);
             worldIn.getPendingBlockTicks().scheduleTick(pos, this, 2);
         }
         this.updateNeighborsInFront(worldIn, pos, state);

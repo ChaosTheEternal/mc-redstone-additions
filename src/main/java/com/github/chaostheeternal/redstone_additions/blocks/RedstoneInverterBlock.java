@@ -41,7 +41,7 @@ public class RedstoneInverterBlock extends RedstoneDiodeBlock {
     private RedstoneInverterBlock(Block.Properties properties) {
         super(properties);
         this.setRegistryName(RESOURCE_LOCATION);
-        this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(BURNED_OUT, Boolean.valueOf(false)));
+        this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(POWERED, false).with(BURNED_OUT, false));
     }
 
     @Override
@@ -68,9 +68,9 @@ public class RedstoneInverterBlock extends RedstoneDiodeBlock {
             boolean isPowered = state.get(POWERED);
             boolean sbPowered = this.shouldBePowered(world, pos, state);
             if (isPowered && !sbPowered) {
-                world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
+                world.setBlockState(pos, state.with(POWERED, false), 2);
             } else if (!isPowered) {
-                world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+                world.setBlockState(pos, state.with(POWERED, true), 2);
                 if (!sbPowered) {
                     world.getPendingBlockTicks().scheduleTick(pos, this, this.getDelay(state), TickPriority.VERY_HIGH);
                 }
@@ -146,15 +146,15 @@ public class RedstoneInverterBlock extends RedstoneDiodeBlock {
             if (shouldBePowered) {
                 if (isBurnedOut(worldIn, pos, false)) {
                     worldIn.playEvent(1502, pos, 0); //burnout effect
-                    worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)).with(BURNED_OUT, Boolean.valueOf(true)), 3);
+                    worldIn.setBlockState(pos, state.with(POWERED, true).with(BURNED_OUT, true), 3);
                     worldIn.getPendingBlockTicks().scheduleTick(pos, worldIn.getBlockState(pos).getBlock(), 160);
                     return true;
                 } else {
-                    worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
+                    worldIn.setBlockState(pos, state.with(POWERED, true), 3);
                 }
             }
         } else if (!shouldBePowered && !isBurnedOut(worldIn, pos, true)) {
-            worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 3);
+            worldIn.setBlockState(pos, state.with(POWERED, false), 3);
         }  
         return false;
     }
