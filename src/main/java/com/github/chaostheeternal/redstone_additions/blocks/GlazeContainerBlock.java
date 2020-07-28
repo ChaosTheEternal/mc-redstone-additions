@@ -4,8 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.github.chaostheeternal.redstone_additions.RedstoneAdditionsMod;
+import com.github.chaostheeternal.redstone_additions.tileEntities.GlazeContainerTileEntity;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ContainerBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -27,6 +30,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
@@ -54,54 +59,68 @@ public class GlazeContainerBlock extends ContainerBlock {
         builder.add(FACING, FILLED);
     }
 
-    // TODO: How would I emulate an empty one, then?
+    // TODO: Figure this out from error's stuff later, I at least want to get the empty model and "chest" piece working first
+    // // TODO: How would I emulate an empty one, then?
     // public Block getEmulatedBlock(IBlockReader world, BlockPos pos) {
-    // if (world instanceof IWorld) {
-    // val provider = ((IWorld)world).getChunkSource();
-    // if (!provider.isEntityTickingChunk(new ChunkPos(pos))) {
-    // LOGGER.error("{}::getEmulatedBlock chunk not loaded: {}",
-    // getClass().getName(), pos);
-    // return Blocks.AIR;
-    // }
-    // }
-    // val te = getBlockEntity(world, pos);
-    // if (te == null) return Blocks.AIR;
-    // val b = te.getEmulatedBlock();
-    // if (b == this) return Blocks.AIR;
-    // return b;
+    //     if (world instanceof IWorld) {
+	// 		net.minecraft.world.chunk.AbstractChunkProvider provider = ((IWorld)world).getChunkProvider();
+	// 		if( !provider.isChunkLoaded( new ChunkPos( pos ) ) ) {
+	// 			LOGGER.error( "{}::getEmulatedBlock chunk not loaded: {}", getClass().getName(), pos );
+	// 			return Blocks.AIR;
+	// 		}
+    //     }
+    //     TileEntity te = world.getTileEntity(pos);
+    //     if (te == null || !(te instanceof GlazeContainerTileEntity)) return Blocks.AIR;
+    //     Block b = te.getEmulatedBlock();
+    //     if (b == this) return Blocks.AIR;
+    //     return b;
     // }
 
     // public BlockState getEmulatedBlockState(IBlockReader world, BlockPos pos) {
-    // if (world instanceof IWorld) {
-    // val provider = ((IWorld)world).getChunkSource();
-    // if (!provider.isEntityTickingChunk(new ChunkPos(pos))) {
-    // LOGGER.error("{}::getEmulatedBlockState chunk not loaded: {}",
-    // getClass().getName(), pos);
-    // return Blocks.AIR.defaultBlockState();
-    // }
-    // }
-    // val te = getBlockEntity(world, pos);
-    // if (te == null) return Blocks.AIR.defaultBlockState();
-    // val emulatedBlockState = te.getEmulatedBlockState();
-    // if (emulatedBlockState == null) return Blocks.AIR.defaultBlockState();
-    // if (emulatedBlockState.getBlock() == this) return
-    // Blocks.AIR.defaultBlockState();
-    // return emulatedBlockState;
+    //     if (world instanceof IWorld) {
+    //         net.minecraft.world.chunk.AbstractChunkProvider provider = ((IWorld)world).getChunkProvider();
+    //         if (!provider.canTick(pos)) {
+    //             LOGGER.error("{}::getEmulatedBlockState chunk not loaded: {}", getClass().getName(), pos);
+    //             return Blocks.AIR.getDefaultState();
+    //         }
+    //     }
+    //     TileEntity te = world.getTileEntity(pos);
+    //     if (te == null || !(te instanceof GlazeContainerTileEntity)) return Blocks.AIR.getDefaultState();
+    //     BlockState emulatedBlockState = te.getEmulatedBlockState();
+    //     if (emulatedBlockState == null || emulatedBlockState.getBlock() == this) return Blocks.AIR.getDefaultState();
+    //     return emulatedBlockState;
     // }
 
-    @Override
-    public ActionResultType onBlockActivated(BlockState stateIn, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (worldIn.isRemote) return ActionResultType.PASS;
-        INamedContainerProvider menuProvider = getContainer(stateIn, worldIn, pos);
-        if (menuProvider == null) return ActionResultType.PASS;
-        player.openContainer(menuProvider);
-        return ActionResultType.SUCCESS;
-    }
+    // @Override
+    // public TileEntity createTileEntity(BlockState state, IBlockReader worldIn) {
+    //     return createNewTileEntity(worldIn);
+    // }
 
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        // TODO Auto-generated method stub
-        return null;
+        return null; //new GlazeContainerTileEntity();
+    }
+
+    @Override
+    public boolean hasTileEntity() {
+        return true;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride(BlockState state) {
+        return false;
+    }
+    @Override
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+        return 0;
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState stateIn, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+        if (worldIn.isRemote || stateIn.get(FILLED)) return ActionResultType.SUCCESS; //ignore right-clicks if this is already filled
+        INamedContainerProvider incp = this.getContainer(stateIn, worldIn, pos);
+        if (incp != null) player.openContainer(incp);
+        return ActionResultType.SUCCESS;
     }
 
     @Override

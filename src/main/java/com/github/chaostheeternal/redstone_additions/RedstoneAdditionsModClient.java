@@ -16,9 +16,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 
 import java.util.function.Supplier;
 
-import com.github.chaostheeternal.redstone_additions.blocks.InstantOffRepeaterBlock;
-import com.github.chaostheeternal.redstone_additions.blocks.RedstoneInverterBlock;
-import com.github.chaostheeternal.redstone_additions.blocks.SignalExtendedObserverBlock;
+import com.github.chaostheeternal.redstone_additions.blocks.*;
 
 @OnlyIn(Dist.CLIENT)
 public class RedstoneAdditionsModClient {
@@ -51,6 +49,7 @@ public class RedstoneAdditionsModClient {
 			RenderTypeLookup.setRenderLayer(InstantOffRepeaterBlock.BLOCK, RenderType.getCutout());
 			Minecraft.getInstance().getBlockColors().register((state, world, pos, tint) -> { return InstantOffRepeaterBlock.lineColorMultiplier(state.get(InstantOffRepeaterBlock.POWERED)); }, InstantOffRepeaterBlock.BLOCK);
 			RenderTypeLookup.setRenderLayer(SignalExtendedObserverBlock.BLOCK, RenderType.getSolid());
+			RenderTypeLookup.setRenderLayer(GlazeContainerBlock.BLOCK, RenderType.getTranslucent());
 		}
 	}
 }

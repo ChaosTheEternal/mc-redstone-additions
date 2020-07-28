@@ -8,8 +8,9 @@ Ideas for:
             * This block is always solid, even when filled
             * IDEA: Once filled, it stops allowing player interactions (so placing blocks against it doesn't require right clicking)
         * Only lifting the "emulated block" stuff, all the other container logic I need to do stock using MCP mappings
-        * Means it needs to have a blockstate model when empty
-        * Can that work?  I think @error's works because he doesn't have a blockstate at all.
+            * Likely need to rewrite the whole damn thing using a stock TileEntity implement INamedContainerProvider instead of using LockedTileEntity
+        * How can I get it to use the emulated block's model when filled?
+            * I'll have to see how @error did it, hopefully without the same lighting issues
 
     Vertical Redstone Wiring
     * Like an end rod (except vertical only) or chain in how it can be placed
