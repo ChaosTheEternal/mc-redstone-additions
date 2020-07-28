@@ -1,6 +1,5 @@
 {
     "variants": {
-        "": { "model": "redstone_additions:block/glaze_container_empty" },
-        "filled=false": { "model": "redstone_additions:block/glaze_container_empty" }
+        "": { "model": "redstone_additions:block/glaze_container_empty" }
     }
 }

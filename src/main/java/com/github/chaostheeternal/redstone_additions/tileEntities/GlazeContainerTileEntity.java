@@ -1,9 +1,10 @@
 package com.github.chaostheeternal.redstone_additions.tileEntities;
 
+import javax.annotation.Nullable;
+
 import com.github.chaostheeternal.redstone_additions.RedstoneAdditionsMod;
 import com.github.chaostheeternal.redstone_additions.blocks.GlazeContainerBlock;
-import com.github.chaostheeternal.redstone_additions.inventory.GlazeContainerContainer;
-import com.github.chaostheeternal.redstone_additions.items.GlazeContainerItem;
+import com.github.chaostheeternal.redstone_additions.inventory.GlazeContainerInventory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,25 +15,28 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.IProperty;
-import net.minecraft.tileentity.LockableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-//NOTE: Do I need to use LockableTileEntity?  Or should I try to do this "from scratch" with TileEntity and implement INamedContainerProvider?
-public class GlazeContainerTileEntity extends LockableTileEntity {
+public class GlazeContainerTileEntity extends TileEntity implements INamedContainerProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
     public static final String REGISTRY_NAME = "glaze_container_entity_type";
     public static final ResourceLocation RESOURCE_LOCATION = new ResourceLocation(RedstoneAdditionsMod.MOD_ID, REGISTRY_NAME);
@@ -44,78 +48,113 @@ public class GlazeContainerTileEntity extends LockableTileEntity {
         TILE_ENTITY.setRegistryName(RESOURCE_LOCATION);
     }
 
-	private boolean _updatingEmulatedBlock = false;
+	private final GlazeContainerInventory emulatedBlock;
     private Block _emulatedBlock = Blocks.AIR;
 	private BlockState _emulatedBlockState = Blocks.AIR.getDefaultState();
-	private NonNullList<ItemStack> _contents;
 
     public GlazeContainerTileEntity() {
-        super(TILE_ENTITY);
+		super(TILE_ENTITY);
+		emulatedBlock = GlazeContainerInventory.createForTileEntity(this::canPlayerAccessInventory, this::markDirty);
     }
+
+	@Override
+	public Container createMenu(int arg0, PlayerInventory arg1, PlayerEntity arg2) {
+		LOGGER.debug("{}::createMenu called, but I won't be showing it!", getClass().getName());
+		return null; //Menu won't show, so this isn't important
+	}
+
+	@Override
+	public ITextComponent getDisplayName() {
+		return null; //Menu won't show, so this isn't important
+	}
 
 	public boolean canPlayerAccessInventory(PlayerEntity player) {
 		return world.getTileEntity(pos) == this && !(player.getDistanceSq((double)pos.getX() + .5D, (double)pos.getY() + .5D, (double)pos.getZ() + .5D) > 64.D);
-    }    
-    @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        return canPlayerAccessInventory(player);
-    }
-    @Override
-    protected Container createMenu(int windowId, PlayerInventory playerInventory) {
-		return new GlazeContainerContainer(windowId, playerInventory, this);
-    }    
-
-	@Override
-	public int getSizeInventory() {
-		return CONTAINER_SIZE;
 	}
 
 	@Override
-	public boolean isEmpty() {
-		for(ItemStack itemStack : _contents) {
-			if(!itemStack.isEmpty()) return false;
+	public CompoundNBT write(CompoundNBT compound) {
+		super.write(compound);
+		CompoundNBT inventory = emulatedBlock.serializeNBT();
+		compound.put(CONTAINER_TAG, inventory);
+		return compound;
+	}
+	@Override
+	public void read(CompoundNBT compound) {
+		super.read(compound);
+		CompoundNBT inventory = compound.getCompound(CONTAINER_TAG);
+		emulatedBlock.deserializeNBT(inventory);
+		if (emulatedBlock.getSizeInventory() != CONTAINER_SIZE) {
+			LOGGER.error("{}::read has wrong size (got {} expected {})", getClass().getName(), emulatedBlock.getSizeInventory(), CONTAINER_SIZE);
+			emulatedBlock.clear();
 		}
-		return true;
+	}
+	@Override
+	@Nullable
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		CompoundNBT compound = new CompoundNBT();
+		write(compound);
+		return new SUpdateTileEntityPacket(this.pos, 0, compound);
+	}
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		read(pkt.getNbtCompound());
+	}
+	@Override
+	public CompoundNBT getUpdateTag() {
+		CompoundNBT compound = new CompoundNBT();
+		write(compound);
+		return compound;
+	}
+	@Override
+	public void handleUpdateTag(CompoundNBT tag) {
+		this.read(tag);
+	}
+
+	public void dropAllContents(World worldIn, BlockPos pos) {
+		InventoryHelper.dropInventoryItems(worldIn, pos, emulatedBlock);
 	}
 
 	@Override
-	public int getInventoryStackLimit() {
-		return 1;
+	public void onLoad() {
+		if (!emulatedBlock.isEmpty()) {
+			LOGGER.debug("{}::onLoad, do I need to refresh the emulated block here?", getClass().getName());
+		}
+		super.onLoad();
 	}
 
+	public void addBlockToContainer(ItemStack stack) {
+		emulatedBlock.setInventorySlotContents(0, stack);
+		//TODO: Additional logic like what we do for setEmulatedBlock, so the renderer and all else happens
+		// NOTE: If I do that, I can remove the logic outside to update the state, though to do that here, I need to "get the block" from the stack
+	}
 
-    
-
+	//TODO: This comes later, this'll be the emulated block logic so this block appears like what you put in it, though when this would be called I'll have to figure out...
 	public void refreshEmulatedBlock() {
 		// LOGGER.debug("{}::refreshEmulatedBlock", getClass().getName());
-		ItemStack itemStack = _contents.get(0);
-		Block block = Blocks.AIR;
-		if(!itemStack.isEmpty()) block = Block.getBlockFromItem(itemStack.getItem());
+		ItemStack itemStack = emulatedBlock.getStackInSlot(0);
+		Block block = !itemStack.isEmpty() ? Block.getBlockFromItem(itemStack.getItem()) : Blocks.AIR;
 		setEmulatedBlock(block);
 	}
 
 	public void setEmulatedBlock(Block block) {
-		_updatingEmulatedBlock = true;
-		assert(world != null);
-		assert(block != null);
+		//TODO: So, this one seems simple, I just call this from GlazeContainerBlock::onBlockActivated
+		// ... but how do I refresh on a chunk reload?  Will I need to effectively have this as part of some other method?
+		assert (world != null);
+		assert (block != null);
 		// LOGGER.debug("{}::setEmulatedBlock {}", getClass().getName(), block.getRegistryName());
-		if(!isLoaded()) {
+		if (!isLoaded()) {
 			LOGGER.error("{}::setEmulatedBlock chunk not loaded", getClass().getName());
-			_updatingEmulatedBlock = false;
 			return;
 		}
 		_emulatedBlock = block;
 		_emulatedBlockState = null;
 		markDirty();
-		if(world.isRemote()) {
-			_updatingEmulatedBlock = false;
-			return;
-		}
+		if (world.isRemote()) { return; }
 		BlockState oldState = getBlockState();
 		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, !(block instanceof AirBlock));
 		world.markBlockRangeForRenderUpdate(pos, oldState, newState);
 		world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
-		_updatingEmulatedBlock = false;
 	}
 
 	public Block getEmulatedBlock() {
@@ -151,47 +190,6 @@ public class GlazeContainerTileEntity extends LockableTileEntity {
 		}
 		return _emulatedBlockState;
 	}
-
-	@Override
-	public boolean isItemValidForSlot(int index, ItemStack stack) {
-        assert(index == 0);
-        return stack.isEmpty() || (stack.getItem() instanceof BlockItem && !(stack.getItem() instanceof GlazeContainerItem));
-	}
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return _contents.get(index);
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void clear() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected ITextComponent getDefaultName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 	@Mod.EventBusSubscriber(modid = RedstoneAdditionsMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 	public static class Registration {

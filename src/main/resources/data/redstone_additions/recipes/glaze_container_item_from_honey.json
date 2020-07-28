@@ -1,0 +1,14 @@
+{
+	"type": "crafting_shaped",
+	"pattern": [
+		"SS",
+		"SS"
+	],
+	"key": {
+        "S": { "item": "honey_block" }
+	},
+	"result": {
+		"item": "redstone_additions:glaze_container_item",
+		"count": 4
+	}
+}

@@ -1,0 +1,18 @@
+{
+    "type": "block",
+    "pools": [ {
+        "name": "glaze_container_block",
+        "rolls": 1,
+        "entries": [ {
+            "type": "item",
+			"functions": [ {
+				"function": "copy_name",
+				"source": "block_entity"
+			} ],
+            "name": "redstone_additions:glaze_container_item"
+        } ],
+        "conditions": [ {
+            "condition": "survives_explosion"
+        } ]
+    } ]
+}

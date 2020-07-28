@@ -1,5 +1,6 @@
 modLoader="javafml"
 loaderVersion="[31,)"
+license="MIT License"
 issueTrackerURL="https://github.com/ChaosTheEternal/mc-redstone-additions/issues"
 [[mods]]
 modId="redstone_additions"
