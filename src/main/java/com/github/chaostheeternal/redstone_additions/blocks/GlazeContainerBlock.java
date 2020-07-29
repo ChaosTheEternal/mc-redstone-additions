@@ -36,8 +36,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
@@ -57,6 +55,9 @@ public class GlazeContainerBlock extends ContainerBlock {
     //TODO: Why does the world block model not work but the in-hand one does?
     // In either case, all I really think I have left is the rendering piece, which does the "hollow" appearance if not filled and whatever block it's emulating if it is filled
     // Also, can I change the hardness and resistance and tool requirements based on the block it's emulating?
+    //TODO: Might need to expand the list of unallowed types of blocks (e.g. Shulker Boxes, Barrels, etc.)
+    // Or just classes of blocks (e.g. ContainerBlock), which instanceof should catch
+    // I do feel like having the check at this level may not be "best practice"
 
     public GlazeContainerBlock(Properties properties) {
         super(properties);
@@ -69,60 +70,63 @@ public class GlazeContainerBlock extends ContainerBlock {
         builder.add(FACING, FILLED);
     }
 
-    // TODO: Figure this out from error's stuff later, I at least want to get the empty model and "chest" piece working first
-    // // TODO: How would I emulate an empty one, then?
-    // public Block getEmulatedBlock(IBlockReader world, BlockPos pos) {
-    //     if (world instanceof IWorld) {
-	// 		net.minecraft.world.chunk.AbstractChunkProvider provider = ((IWorld)world).getChunkProvider();
-	// 		if( !provider.isChunkLoaded( new ChunkPos( pos ) ) ) {
-	// 			LOGGER.error( "{}::getEmulatedBlock chunk not loaded: {}", getClass().getName(), pos );
-	// 			return Blocks.AIR;
-	// 		}
-    //     }
-    //     TileEntity te = world.getTileEntity(pos);
-    //     if (te == null || !(te instanceof GlazeContainerTileEntity)) return Blocks.AIR;
-    //     Block b = te.getEmulatedBlock();
-    //     if (b == this) return Blocks.AIR;
-    //     return b;
-    // }
+    public Block getEmulatedBlock(IBlockReader world, BlockPos pos) {
+        if (world instanceof IWorld) {
+			net.minecraft.world.chunk.AbstractChunkProvider provider = ((IWorld)world).getChunkProvider();
+			if (!provider.isChunkLoaded(new ChunkPos(pos))) {
+				LOGGER.error("{}::getEmulatedBlock chunk not loaded: {}", getClass().getName(), pos);
+				return Blocks.AIR;
+			}
+        }
+        TileEntity te = world.getTileEntity(pos);
+        if (te == null || !(te instanceof GlazeContainerTileEntity)) return Blocks.AIR;
+        Block b = ((GlazeContainerTileEntity)te).getEmulatedBlock();
+        if (b == this) return Blocks.AIR;
+        return b;
+    }
 
-    // public BlockState getEmulatedBlockState(IBlockReader world, BlockPos pos) {
-    //     if (world instanceof IWorld) {
-    //         net.minecraft.world.chunk.AbstractChunkProvider provider = ((IWorld)world).getChunkProvider();
-    //         if (!provider.canTick(pos)) {
-    //             LOGGER.error("{}::getEmulatedBlockState chunk not loaded: {}", getClass().getName(), pos);
-    //             return Blocks.AIR.getDefaultState();
-    //         }
-    //     }
-    //     TileEntity te = world.getTileEntity(pos);
-    //     if (te == null || !(te instanceof GlazeContainerTileEntity)) return Blocks.AIR.getDefaultState();
-    //     BlockState emulatedBlockState = te.getEmulatedBlockState();
-    //     if (emulatedBlockState == null || emulatedBlockState.getBlock() == this) return Blocks.AIR.getDefaultState();
-    //     return emulatedBlockState;
-    // }
-
-    // @Override
-    // public TileEntity createTileEntity(BlockState state, IBlockReader worldIn) {
-    //     return createNewTileEntity(worldIn);
-    // }
+    public BlockState getEmulatedBlockState(IBlockReader world, BlockPos pos) {
+        if (world instanceof IWorld) {
+            net.minecraft.world.chunk.AbstractChunkProvider provider = ((IWorld)world).getChunkProvider();
+            if (!provider.canTick(pos)) {
+                LOGGER.error("{}::getEmulatedBlockState chunk not loaded: {}", getClass().getName(), pos);
+                return Blocks.AIR.getDefaultState();
+            }
+        }
+        TileEntity te = world.getTileEntity(pos);
+        if (te == null || !(te instanceof GlazeContainerTileEntity)) return Blocks.AIR.getDefaultState();
+        BlockState emulatedBlockState = ((GlazeContainerTileEntity)te).getEmulatedBlockState();
+        if (emulatedBlockState == null || emulatedBlockState.getBlock() == this) return Blocks.AIR.getDefaultState();
+        return emulatedBlockState;
+    }
 
     @Override
     public float getBlockHardness(BlockState state, IBlockReader worldIn, BlockPos pos) {
         if (state.get(FILLED)) {
-            return 0; //TODO: Return the emulated block's hardness
-        } else {
-            return 0;
-        }
-    }
-    @Override
-    public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, Entity exploder, Explosion explosion) {
-        if (state.get(FILLED)) {
-            return 0; //TODO: Return the emulated block's explosion resistance
+            return getEmulatedBlockState(worldIn, pos).getBlockHardness(worldIn, pos);
         } else {
             return 0;
         }
     }
 
+    @Override
+    public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, Entity exploder, Explosion explosion) {
+        if (state.get(FILLED)) {
+            return getEmulatedBlockState(world, pos).getExplosionResistance(world, pos, exploder, explosion);
+        } else {
+            return 0;
+        }
+    }
+    // PROBLEM: Can't change HarvestTool based on the emulated block since I don't get world/pos info
+    // Will I have to change it so if you "break" this block it places the contained block in its place?
+    // In that case, it seems like I'd need to do it both ways, placing this "replaces" an existing block, and that might not be feasible
+    // Is there any way for me to have all those methods use the emulated block?  We don't store that at this level (and not sure if I can)
+    //  and I can't get the tileEntity without world and pos, which not all methods take... like getHarvestTool
+
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader worldIn) {
+        return createNewTileEntity(worldIn);
+    }
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
         return new GlazeContainerTileEntity();
@@ -145,16 +149,14 @@ public class GlazeContainerBlock extends ContainerBlock {
     @Override
     public ActionResultType onBlockActivated(BlockState stateIn, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (worldIn.isRemote) return ActionResultType.SUCCESS;
-        if (stateIn.get(FILLED)) return ActionResultType.PASS; //Does this fulfill the "disable once filled"?
-        LOGGER.debug("{}::onBlockActivated with an unfilled glaze block, here's where I'd go ahead and fill it in", getClass().getName());
+        if (stateIn.get(FILLED)) return ActionResultType.PASS;
         INamedContainerProvider incp = this.getContainer(stateIn, worldIn, pos);
         if (incp != null && incp instanceof GlazeContainerTileEntity) { 
             GlazeContainerTileEntity te = (GlazeContainerTileEntity)incp;
             ItemStack stack = player.getHeldItem(handIn);
-            if (te.canPlayerAccessInventory(player) && !stack.isEmpty() && stack.getItem() instanceof BlockItem && !(stack.getItem() instanceof GlazeContainerItem)) {
-                te.addBlockToContainer(stack);
-                BlockState newState = stateIn.with(FILLED, true);
-                worldIn.setBlockState(pos, newState);
+            Block block = Block.getBlockFromItem(stack.getItem());
+            if (te.canPlayerAccessInventory(player) && !stack.isEmpty() && stack.getItem() instanceof BlockItem && !(stack.getItem() instanceof GlazeContainerItem) && block.getDefaultState().isSolid()) {
+                te.addBlockToContainer(stack, block);
             }
         }
         return ActionResultType.SUCCESS;
@@ -166,7 +168,7 @@ public class GlazeContainerBlock extends ContainerBlock {
             TileEntity te = worldIn.getTileEntity(pos);
             if (te instanceof GlazeContainerTileEntity) ((GlazeContainerTileEntity)te).dropAllContents(worldIn, pos);
         }
-        super.onReplaced(state, worldIn, pos, newState, isMoving); //even though it's deprecated, I'm overriding it
+        super.onReplaced(state, worldIn, pos, newState, isMoving); //even though it's deprecated, I'm overriding it so I need to call the super
     }
 
     @Override

@@ -22,13 +22,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.BlockFlags;
@@ -49,9 +46,7 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
     }
 
 	private final GlazeContainerInventory emulatedBlock;
-    private Block _emulatedBlock = Blocks.AIR;
-	private BlockState _emulatedBlockState = Blocks.AIR.getDefaultState();
-
+	
     public GlazeContainerTileEntity() {
 		super(TILE_ENTITY);
 		emulatedBlock = GlazeContainerInventory.createForTileEntity(this::canPlayerAccessInventory, this::markDirty);
@@ -59,7 +54,6 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
 
 	@Override
 	public Container createMenu(int arg0, PlayerInventory arg1, PlayerEntity arg2) {
-		LOGGER.debug("{}::createMenu called, but I won't be showing it!", getClass().getName());
 		return null; //Menu won't show, so this isn't important
 	}
 
@@ -115,81 +109,75 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
 		InventoryHelper.dropInventoryItems(worldIn, pos, emulatedBlock);
 	}
 
-	@Override
-	public void onLoad() {
-		if (!emulatedBlock.isEmpty()) {
-			LOGGER.debug("{}::onLoad, do I need to refresh the emulated block here?", getClass().getName());
-		}
-		super.onLoad();
-	}
-
-	public void addBlockToContainer(ItemStack stack) {
+	public void addBlockToContainer(ItemStack stack, Block block) {
 		emulatedBlock.setInventorySlotContents(0, stack);
-		//TODO: Additional logic like what we do for setEmulatedBlock, so the renderer and all else happens
-		// NOTE: If I do that, I can remove the logic outside to update the state, though to do that here, I need to "get the block" from the stack
-	}
-
-	//TODO: This comes later, this'll be the emulated block logic so this block appears like what you put in it, though when this would be called I'll have to figure out...
-	public void refreshEmulatedBlock() {
-		// LOGGER.debug("{}::refreshEmulatedBlock", getClass().getName());
-		ItemStack itemStack = emulatedBlock.getStackInSlot(0);
-		Block block = !itemStack.isEmpty() ? Block.getBlockFromItem(itemStack.getItem()) : Blocks.AIR;
 		setEmulatedBlock(block);
 	}
 
-	public void setEmulatedBlock(Block block) {
-		//TODO: So, this one seems simple, I just call this from GlazeContainerBlock::onBlockActivated
-		// ... but how do I refresh on a chunk reload?  Will I need to effectively have this as part of some other method?
-		assert (world != null);
-		assert (block != null);
-		// LOGGER.debug("{}::setEmulatedBlock {}", getClass().getName(), block.getRegistryName());
-		if (!isLoaded()) {
-			LOGGER.error("{}::setEmulatedBlock chunk not loaded", getClass().getName());
-			return;
-		}
-		_emulatedBlock = block;
-		_emulatedBlockState = null;
-		markDirty();
-		if (world.isRemote()) { return; }
+	//#region EmulatedBlockLiveFetching
+	private void setEmulatedBlock(Block block) { 
 		BlockState oldState = getBlockState();
-		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, !(block instanceof AirBlock));
+		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
 		world.markBlockRangeForRenderUpdate(pos, oldState, newState);
 		world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
+		markDirty();
 	}
 
-	public Block getEmulatedBlock() {
-		return _emulatedBlock;
-	}
-
-	private boolean isLoaded() {
-		if(world == null) return false;
-		if(world.restoringBlockSnapshots) return false;
-		if(!world.getChunkProvider().isChunkLoaded(new ChunkPos(pos))) return false;
-		return true;
-    }
-
-	@SuppressWarnings("unchecked")
 	public BlockState getEmulatedBlockState() {
-		if(_emulatedBlockState == null && _emulatedBlock != null) {
-			BlockState blockState = getBlockState();
-			if(blockState != null) {
-				BlockState emulatedBlockState = _emulatedBlock.getDefaultState();
-				String facingName = GlazeContainerBlock.FACING.getName();
-				Direction facingValue = blockState.get(GlazeContainerBlock.FACING);
-				for(IProperty<?> property : emulatedBlockState.getProperties()) {
-					String propertyName = property.getName();
-					// LOGGER.debug("{}::getEmulatedBlockState {}", getClass().getName(), property);
-					if(facingName.equals(propertyName)) {
-						if(property.getAllowedValues().contains(facingValue)) {
-							emulatedBlockState = emulatedBlockState.with((IProperty<Direction>)property, facingValue);
-						}
-					}
-				}
-				_emulatedBlockState = emulatedBlockState;
-			}
-		}
-		return _emulatedBlockState;
+		return getEmulatedBlock().getDefaultState(); //This shouldn't work...
 	}
+	public Block getEmulatedBlock() {
+		return Block.getBlockFromItem(emulatedBlock.getStackInSlot(0).getItem());
+	}
+	////#endregion
+	//#region EmulatedBlockCaching
+	// @Override
+	// public void onLoad() {
+	// 	loadEmulatedBlock();
+	// 	super.onLoad();
+	// }
+	// public void loadEmulatedBlock() {
+	// 	ItemStack stack = emulatedBlock.getStackInSlot(0);
+	// 	_emulatedBlock = Block.getBlockFromItem(stack.getItem());
+	// }
+	// private void setEmulatedBlock(Block block) {
+	// 	_emulatedBlock = block;
+	// 	_emulatedBlockState = null;
+	// 	BlockState oldState = getBlockState();
+	// 	BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
+	// 	world.markBlockRangeForRenderUpdate(pos, oldState, newState);
+	// 	world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
+	// 	markDirty();
+	// }
+	
+	// public Block getEmulatedBlock() {
+	// 	return _emulatedBlock;
+	// }
+
+	// @SuppressWarnings("unchecked")
+	// public BlockState getEmulatedBlockState() {
+	// 	if (_emulatedBlockState == null && _emulatedBlock != null) {
+	// 		LOGGER.debug("{}::getEmulatedBlockState for {}", getClass().getName(), _emulatedBlock.getClass().getName());
+	// 		BlockState blockState = getBlockState();
+	// 		if (blockState != null) {
+	// 			BlockState emulatedBlockState = _emulatedBlock.getDefaultState();
+	// 			String facingName = GlazeContainerBlock.FACING.getName();
+	// 			Direction facingValue = blockState.get(GlazeContainerBlock.FACING);
+	// 			for(IProperty<?> property : emulatedBlockState.getProperties()) {
+	// 				String propertyName = property.getName();
+	// 				// LOGGER.debug("{}::getEmulatedBlockState {}", getClass().getName(), property);
+	// 				if (facingName.equals(propertyName)) {
+	// 					if (property.getAllowedValues().contains(facingValue)) {
+	// 						emulatedBlockState = emulatedBlockState.with((IProperty<Direction>)property, facingValue);
+	// 					}
+	// 				}
+	// 			}
+	// 			_emulatedBlockState = emulatedBlockState;
+	// 		}
+	// 	}
+	// 	return _emulatedBlockState;
+	// }
+	//#endregion
 
 	@Mod.EventBusSubscriber(modid = RedstoneAdditionsMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 	public static class Registration {
