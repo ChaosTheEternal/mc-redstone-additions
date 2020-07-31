@@ -8,11 +8,13 @@ import com.github.chaostheeternal.redstone_additions.items.GlazeContainerItem;
 import com.github.chaostheeternal.redstone_additions.tileEntities.GlazeContainerTileEntity;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ContainerBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,6 +23,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.IProperty;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.StateContainer.Builder;
 import net.minecraft.tileentity.TileEntity;
@@ -47,17 +50,17 @@ public class GlazeContainerBlock extends ContainerBlock {
     public static final String REGISTRY_NAME = "glaze_container_block";
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
-    //TODO: Any property so it can present the block ID of what it is imitating?
     public static final ResourceLocation RESOURCE_LOCATION = new ResourceLocation(RedstoneAdditionsMod.MOD_ID, REGISTRY_NAME);
     public static final RegistryObject<GlazeContainerBlock> REGISTRY_OBJECT = RegistryObject.of(RESOURCE_LOCATION, ForgeRegistries.BLOCKS);
-    public static final GlazeContainerBlock BLOCK = new GlazeContainerBlock(Block.Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(0.0F).sound(SoundType.SLIME));
+    public static final Material GLAZE = (new Material.Builder(MaterialColor.GRAY)).build();
+    public static final GlazeContainerBlock BLOCK = new GlazeContainerBlock(Block.Properties.create(GLAZE).hardnessAndResistance(0.0F).sound(SoundType.SLIME));
 
-    //TODO: Why does the world block model not work but the in-hand one does?
-    // In either case, all I really think I have left is the rendering piece, which does the "hollow" appearance if not filled and whatever block it's emulating if it is filled
-    // Also, can I change the hardness and resistance and tool requirements based on the block it's emulating?
-    //TODO: Might need to expand the list of unallowed types of blocks (e.g. Shulker Boxes, Barrels, etc.)
-    // Or just classes of blocks (e.g. ContainerBlock), which instanceof should catch
-    // I do feel like having the check at this level may not be "best practice"
+    //TODO: Consider reworking the "render" piece based off of TheGreyGhost's MBE04 example
+    //  Problem with that is, that examples renders a model based off of what is adjacent, whereas mine renders based on the block stored
+    //TODO: Need the "transparent" logic so it doesn't hide edges of blocks it's attached to
+    //  I thought the RenderType.getTranslucent() would've handled that
+    //TODO: Can I change the tool requirements based on the block it's emulating?
+    //TODO: Need to handle facing on placement and/or when the block it will contain is placed (if possible and it would be preferred)
 
     public GlazeContainerBlock(Properties properties) {
         super(properties);
@@ -68,6 +71,15 @@ public class GlazeContainerBlock extends ContainerBlock {
     @Override
     protected void fillStateContainer(Builder<Block, BlockState> builder) {
         builder.add(FACING, FILLED);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        if (state.get(FILLED)) {
+            return BlockRenderType.INVISIBLE; //leave how it appears to the render method
+        } else {
+            return BlockRenderType.MODEL; //Not filled, use the blockstate model stuff
+        }        
     }
 
     public Block getEmulatedBlock(IBlockReader world, BlockPos pos) {
@@ -138,24 +150,16 @@ public class GlazeContainerBlock extends ContainerBlock {
     }
 
     @Override
-    public boolean hasComparatorInputOverride(BlockState state) {
-        return false;
-    }
-    @Override
-    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
-        return 0;
-    }
-
-    @Override
     public ActionResultType onBlockActivated(BlockState stateIn, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (worldIn.isRemote) return ActionResultType.SUCCESS;
         if (stateIn.get(FILLED)) return ActionResultType.PASS;
         INamedContainerProvider incp = this.getContainer(stateIn, worldIn, pos);
         if (incp != null && incp instanceof GlazeContainerTileEntity) { 
             GlazeContainerTileEntity te = (GlazeContainerTileEntity)incp;
+            // I get the feeling I should have extra checks in this section to prevent NREs
             ItemStack stack = player.getHeldItem(handIn);
             Block block = Block.getBlockFromItem(stack.getItem());
-            if (te.canPlayerAccessInventory(player) && !stack.isEmpty() && stack.getItem() instanceof BlockItem && !(stack.getItem() instanceof GlazeContainerItem) && block.getDefaultState().isSolid()) {
+            if (te.canPlayerAccessInventory(player) && !stack.isEmpty() && stack.getItem() instanceof BlockItem && !(block instanceof ContainerBlock) && block.getDefaultState().isSolid()) {
                 te.addBlockToContainer(stack, block);
             }
         }
@@ -168,7 +172,6 @@ public class GlazeContainerBlock extends ContainerBlock {
             TileEntity te = worldIn.getTileEntity(pos);
             if (te instanceof GlazeContainerTileEntity) ((GlazeContainerTileEntity)te).dropAllContents(worldIn, pos);
         }
-        super.onReplaced(state, worldIn, pos, newState, isMoving); //even though it's deprecated, I'm overriding it so I need to call the super
     }
 
     @Override

@@ -3,14 +3,12 @@ Ideas for:
     * Can I hide the "countdown" property?  Or make it truly a private property of the block?
 
     Glaze Container
-    * Need to lift @error's Illusion Block: https://bitbucket.org/errorx666/tdwtf-minecraft/src/d6b10a9a64efb2417e32df50a21e067e421652fd/src/main/java/net/error_unlimited/tdwtf_minecraft/blocks/IllusionBlock.java?at=master
-        * Main differences:
-            * This block is always solid, even when filled
-            * IDEA: Once filled, it stops allowing player interactions (so placing blocks against it doesn't require right clicking)
-        * Only lifting the "emulated block" stuff, all the other container logic I need to do stock using MCP mappings
-            * Likely need to rewrite the whole damn thing using a stock TileEntity implement INamedContainerProvider instead of using LockedTileEntity
-        * How can I get it to use the emulated block's model when filled?
-            * I'll have to see how @error did it, hopefully without the same lighting issues
+    * Need to get the emulated block stuff working better
+        * What tool breaks the block
+        * Rendering (may drop what I'm trying to copy from other mods/@error and use @TheGreyGhost's MBE04 example)
+            * Will any changes in that cause issues with what I'm otherwise trying to do?
+        * Can you do "string" properties in Minecraft?  So I can have it say which block it contains (for debug)?
+            * I don't believe so, since Forge says "all combinations of properties are generated on startup" so a string would be overkill
 
     Directed Redstone Wiring / Redstone Rod
     * Like an end rod
@@ -18,13 +16,14 @@ Ideas for:
         * That would mean I don't have to worry about branching or linking to redstone
             * Though if I were to "do it like a chain" that could mean allowing these to be waterlogged
             * Need to check the pre release, do chains break when hit by flowing water?
-    * It is powered by/powering any blocks they are attached to
+    * It is powered by/powering blocks they are attached to
         * Don't receive or give off power any other way
-        * Scrapping idea (for now) to connect into redstone dust if placed facing up/down
+        * They are one way only (like a repeater, power in one side, power out the other)
+            * That means, if you want "two way" powering, you'll need two lines (one going each way)
     * Works like redstone dust and has signal drop-off
         * Do I then need to consider a "vertical redstone repeater" to help with this?
-    * FOR LATER CONSIDERATION: If it has a solid block underneath and is facing up, it also can be hooked into redstone dust along the ground
-        * Can I also have it tie to redstone dust at higher levels adjacent to the vertical wiring?
+            * No, the expectation will be to feed the rods into a block to power it, then continue the rods (which'll pick back up at 15 power)
+        
     * Recipe?
         * If it is like an end rod... could just do the end rod recipe but add in redstone dust?
             * Blaze Rod + Popped Chorus Fruit + Redstone Dust
