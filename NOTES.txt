@@ -12,19 +12,27 @@ Ideas for:
         * How can I get it to use the emulated block's model when filled?
             * I'll have to see how @error did it, hopefully without the same lighting issues
 
-    Vertical Redstone Wiring
-    * Like an end rod (except vertical only) or chain in how it can be placed
-    * If it has a solid block underneath, it also can be hooked into redstone dust along the ground
-        * How can I have it tie to redstone dust at higher levels adjacent to the vertical wiring?
-        * Or should I just leave it as strongly powering whatever block is at the top and let the player deal with it?
-    * Can only give power up and down, except for the "bottom" block can give it in all directions
-        * Can look at the Redstone Dust logic for how to determine the "hit" area for this base block
-    * Works like redstone dust otherwise and has signal drop-off
+    Directed Redstone Wiring / Redstone Rod
+    * Like an end rod
+        * Since 1.16.2 changed chains to be placable like end rods without light... can just fall back to "like an end rod"
+        * That would mean I don't have to worry about branching or linking to redstone
+            * Though if I were to "do it like a chain" that could mean allowing these to be waterlogged
+            * Need to check the pre release, do chains break when hit by flowing water?
+    * It is powered by/powering any blocks they are attached to
+        * Don't receive or give off power any other way
+        * Scrapping idea (for now) to connect into redstone dust if placed facing up/down
+    * Works like redstone dust and has signal drop-off
         * Do I then need to consider a "vertical redstone repeater" to help with this?
+    * FOR LATER CONSIDERATION: If it has a solid block underneath and is facing up, it also can be hooked into redstone dust along the ground
+        * Can I also have it tie to redstone dust at higher levels adjacent to the vertical wiring?
     * Recipe?
-        * Maybe consider making this like the 1.16 chain, may actually make it use the chain recipe but sub in redstone dust in place of the iron nuggets.
-        * Or, should I put the dust in place of the ingot, so it's fairly cheap and makes more sense why it would break on any hit like redstone dust?
-        * If I want to go the "chain" route, then I'm either pseudo backporting the chain to 1.15.2, or just holding the mod until Forge 1.16.2
+        * If it is like an end rod... could just do the end rod recipe but add in redstone dust?
+            * Blaze Rod + Popped Chorus Fruit + Redstone Dust
+                * 1 Dust for 4 Redstone Rods?  Or 4 Dust for 4 Redstone Rods?
+            * End Rod + Redstone Dust
+        * Or should I give an option that is easier to get early on?
+            * 3 Redstone Dust in a line
+        * Why not both?  But make the version using end rod components give more than just using redstone dust
 
     Configurable Pistons
     * Will have an interface when interacted with, like a chest or furnace

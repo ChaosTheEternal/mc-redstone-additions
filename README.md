@@ -20,8 +20,8 @@ A modified observer that can output a signal for more than one tick.
 ### Glaze Container
 A single block container that appears and mostly works like the block inserted but makes the block act like Glazed Terracotta and doesn't get pulled by Slime/Honey blocks.
 
-### Vertical Redstone Wiring
-Some option to make running redstone vertically (up and down) easier and more compact.  Like a "redstone ladder" except it can also transmit power down.
+### Directed Redstone Wiring / Redstone Rods
+Some option to make running redstone vertically (up and down) easier and more compact, or to allow an option to run redstone through water.  Like a "redstone ladder" except it can also transmit power down.
 
 ### Configurable Pistons
 A modification of pistons that can be configured to have more than one block of reach and logic to also pull multiple blocks as if they were Slime or Honey blocks.

@@ -9,10 +9,8 @@ import com.github.chaostheeternal.redstone_additions.inventory.GlazeContainerInv
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.InventoryHelper;
@@ -115,6 +113,9 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
 	}
 
 	//#region EmulatedBlockLiveFetching
+	// NOTE: While this does appear to work, I would rather get the caching working.
+	//  I can't say whether fetching and getting the block from the item from the stack each and every time is more or less impactful
+	//  than keeping the emulated block (and maybe state) in memory while the actual block is in memory
 	private void setEmulatedBlock(Block block) { 
 		BlockState oldState = getBlockState();
 		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
@@ -124,7 +125,7 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
 	}
 
 	public BlockState getEmulatedBlockState() {
-		return getEmulatedBlock().getDefaultState(); //This shouldn't work...
+		return getEmulatedBlock().getDefaultState();
 	}
 	public Block getEmulatedBlock() {
 		return Block.getBlockFromItem(emulatedBlock.getStackInSlot(0).getItem());
