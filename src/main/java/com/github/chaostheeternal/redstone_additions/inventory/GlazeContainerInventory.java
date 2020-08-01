@@ -96,13 +96,9 @@ public class GlazeContainerInventory implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        if (stack.getCount() == 1) {
-            contents.setStackInSlot(slot, stack);
-        } else {
-            ItemStack copy = stack.copy();
-            copy.setCount(1);
-            contents.setStackInSlot(slot, copy);
-        }
+        ItemStack copy = stack.copy(); //Always need to copy this so I'm not putting the actual stack in the box then decrementing it to get it out of your inventory (because it also clears out the stored stack too)
+        copy.setCount(1);
+        contents.setStackInSlot(slot, copy);
         stack.shrink(1);
     }
 }
