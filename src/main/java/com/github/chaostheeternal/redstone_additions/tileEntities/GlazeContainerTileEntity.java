@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.InventoryHelper;
@@ -20,8 +21,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -113,71 +116,73 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
 	}
 
 	//#region EmulatedBlockLiveFetching
-	// NOTE: While this does appear to work, I would rather get the caching working.
-	//  I can't say whether fetching and getting the block from the item from the stack each and every time is more or less impactful
-	//  than keeping the emulated block (and maybe state) in memory while the actual block is in memory
-	private void setEmulatedBlock(Block block) { 
-		BlockState oldState = getBlockState();
-		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
-		world.markBlockRangeForRenderUpdate(pos, oldState, newState);
-		world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
-		markDirty();
-	}
-
-	public BlockState getEmulatedBlockState() {
-		return getEmulatedBlock().getDefaultState();
-	}
-	public Block getEmulatedBlock() {
-		return Block.getBlockFromItem(emulatedBlock.getStackInSlot(0).getItem());
-	}
-	////#endregion
-	//#region EmulatedBlockCaching
-	// @Override
-	// public void onLoad() {
-	// 	loadEmulatedBlock();
-	// 	super.onLoad();
-	// }
-	// public void loadEmulatedBlock() {
-	// 	ItemStack stack = emulatedBlock.getStackInSlot(0);
-	// 	_emulatedBlock = Block.getBlockFromItem(stack.getItem());
-	// }
-	// private void setEmulatedBlock(Block block) {
-	// 	_emulatedBlock = block;
-	// 	_emulatedBlockState = null;
+	// // NOTE: While this does appear to work, I would rather get the caching working.
+	// //  I can't say whether fetching and getting the block from the item from the stack each and every time is more or less impactful
+	// //  than keeping the emulated block (and maybe state) in memory while the actual block is in memory
+	// private void setEmulatedBlock(Block block) { 
 	// 	BlockState oldState = getBlockState();
 	// 	BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
 	// 	world.markBlockRangeForRenderUpdate(pos, oldState, newState);
 	// 	world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
 	// 	markDirty();
 	// }
-	
-	// public Block getEmulatedBlock() {
-	// 	return _emulatedBlock;
-	// }
 
-	// @SuppressWarnings("unchecked")
 	// public BlockState getEmulatedBlockState() {
-	// 	if (_emulatedBlockState == null && _emulatedBlock != null) {
-	// 		LOGGER.debug("{}::getEmulatedBlockState for {}", getClass().getName(), _emulatedBlock.getClass().getName());
-	// 		BlockState blockState = getBlockState();
-	// 		if (blockState != null) {
-	// 			BlockState emulatedBlockState = _emulatedBlock.getDefaultState();
-	// 			String facingName = GlazeContainerBlock.FACING.getName();
-	// 			Direction facingValue = blockState.get(GlazeContainerBlock.FACING);
-	// 			for(IProperty<?> property : emulatedBlockState.getProperties()) {
-	// 				String propertyName = property.getName();
-	// 				// LOGGER.debug("{}::getEmulatedBlockState {}", getClass().getName(), property);
-	// 				if (facingName.equals(propertyName)) {
-	// 					if (property.getAllowedValues().contains(facingValue)) {
-	// 						emulatedBlockState = emulatedBlockState.with((IProperty<Direction>)property, facingValue);
-	// 					}
-	// 				}
-	// 			}
-	// 			_emulatedBlockState = emulatedBlockState;
-	// 		}
-	// 	}
-	// 	return _emulatedBlockState;
+	// 	return getEmulatedBlock().getDefaultState();
 	// }
+	// public Block getEmulatedBlock() {
+	// 	return Block.getBlockFromItem(emulatedBlock.getStackInSlot(0).getItem());
+	// }
+	//#endregion
+	//#region EmulatedBlockCaching
+	@Override
+	public void onLoad() {
+		loadEmulatedBlock();
+		super.onLoad();
+	}
+	private Block _emulatedBlock = Blocks.AIR;
+	private BlockState _emulatedBlockState = null;
+	public void loadEmulatedBlock() {
+		ItemStack stack = emulatedBlock.getStackInSlot(0);
+		_emulatedBlock = Block.getBlockFromItem(stack.getItem());
+	}
+	private void setEmulatedBlock(Block block) {
+		_emulatedBlock = block;
+		_emulatedBlockState = null;
+		BlockState oldState = getBlockState();
+		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
+		world.markBlockRangeForRenderUpdate(pos, oldState, newState);
+		world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
+		markDirty();
+	}
+	
+	public Block getEmulatedBlock() {
+		return _emulatedBlock;
+	}
+
+	@SuppressWarnings("unchecked")
+	public BlockState getEmulatedBlockState() {
+		if (_emulatedBlockState == null && _emulatedBlock != null) {
+			LOGGER.debug("{}::getEmulatedBlockState for {}", getClass().getName(), _emulatedBlock.getClass().getName());
+			BlockState blockState = getBlockState();
+			if (blockState != null) {
+				BlockState emulatedBlockState = _emulatedBlock.getDefaultState();
+				String facingName = GlazeContainerBlock.FACING.getName();
+				Direction facingValue = blockState.get(GlazeContainerBlock.FACING);
+				for(IProperty<?> property : emulatedBlockState.getProperties()) {
+					String propertyName = property.getName();
+					// LOGGER.debug("{}::getEmulatedBlockState {}", getClass().getName(), property);
+					if (facingName.equals(propertyName)) {
+						if (property.getAllowedValues().contains(facingValue)) {
+							emulatedBlockState = emulatedBlockState.with((IProperty<Direction>)property, facingValue);
+						}
+					}
+				}
+				_emulatedBlockState = emulatedBlockState;
+			}
+		}
+		return _emulatedBlockState;
+	}
 	//#endregion
 
 	@Mod.EventBusSubscriber(modid = RedstoneAdditionsMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
