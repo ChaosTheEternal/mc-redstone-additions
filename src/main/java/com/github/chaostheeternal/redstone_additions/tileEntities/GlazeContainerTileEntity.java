@@ -117,14 +117,17 @@ public class GlazeContainerTileEntity extends TileEntity implements INamedContai
 	private Block _emulatedBlock = Blocks.AIR;
 	public void loadEmulatedBlock() {
 		ItemStack stack = emulatedBlock.getStackInSlot(0);
-		_emulatedBlock = Block.getBlockFromItem(stack.getItem()); //... ok, now why is this loading air when I know we set an actual block?
+		_emulatedBlock = Block.getBlockFromItem(stack.getItem());
 	}
 	private void setEmulatedBlock(Block block) {
 		_emulatedBlock = block;
 		BlockState oldState = getBlockState();
 		BlockState newState = oldState.with(GlazeContainerBlock.FILLED, true);
-		world.markBlockRangeForRenderUpdate(pos, oldState, newState);
-		world.setBlockState(pos, newState, BlockFlags.DEFAULT_AND_RERENDER | BlockFlags.IS_MOVING);
+		//world.markBlockRangeForRenderUpdate(pos, oldState, newState); //Do I need this?
+		world.setBlockState(pos, newState, BlockFlags.DEFAULT); //Why doesn't this tell the client to re-calculate light level?  It works right on quit and load, but not on placement
+		// Looking at TheGreyGhost's furnace example, he would change the state inside a method in the TileEntity and calls setBlockState and markDirty right after... and then the block's getLightValue should calculate based on new information
+		// I know the getLightLevel correctly updated since it was logging that the getLightLevel calls with Sea Lanterns were returning 15...
+		// A part of me thinks it has something to do with the customized `render` method...
 		markDirty();
 	}	
 	public Block getEmulatedBlock() {

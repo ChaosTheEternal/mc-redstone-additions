@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
@@ -60,7 +61,7 @@ public class GlazeContainerBlock extends ContainerBlock {
     //TODO: Need the "transparent" logic so it doesn't hide edges of blocks it's attached to
     //  I thought the RenderType.getTranslucent() would've handled that
     //TODO: Can I change the tool requirements based on the block it's emulating?
-    //TODO: Need to handle facing on placement and/or when the block it will contain is placed (if possible and it would be preferred)
+    //TODO: Need to handle facing on placement and/or when the block it will contain is placed (if possible and it would be preferred to use it when the emulated block is "placed")
 
     public GlazeContainerBlock(Properties properties) {
         super(properties);
@@ -129,6 +130,16 @@ public class GlazeContainerBlock extends ContainerBlock {
             return 0;
         }
     }
+
+    @Override
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+        if (state.get(FILLED)) {
+            return getEmulatedBlockState(world, pos).getLightValue(world, pos); //TODO: How do I tell the clients that the block has updated so to consider the light from the block?  I thought the setBlockState/markDirty in the TileEntity would do that...
+        } else {
+            return super.getLightValue(state, world, pos); // I would think this would be 0... but just call the super method
+        }
+    }
+
     // PROBLEM: Can't change HarvestTool based on the emulated block since I don't get world/pos info
     // Will I have to change it so if you "break" this block it places the contained block in its place?
     // In that case, it seems like I'd need to do it both ways, placing this "replaces" an existing block, and that might not be feasible
@@ -143,7 +154,6 @@ public class GlazeContainerBlock extends ContainerBlock {
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
         return new GlazeContainerTileEntity();
     }
-
     @Override
     public boolean hasTileEntity() {
         return true;
@@ -161,9 +171,14 @@ public class GlazeContainerBlock extends ContainerBlock {
             Block block = Block.getBlockFromItem(stack.getItem());
             if (te.canPlayerAccessInventory(player) && !stack.isEmpty() && stack.getItem() instanceof BlockItem && !(block instanceof ContainerBlock) && block.getDefaultState().isSolid()) {
                 te.addBlockToContainer(stack, block);
+                // Can I get facing here?  The big problem is, I don't have a BlockItemUseContext from which to get facing... I guess hit.getFace() *might* give me something usable...
             }
         }
         return ActionResultType.SUCCESS;
+    }
+
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+       return this.getDefaultState().with(FACING, context.getNearestLookingDirection());
     }
 
     @Override
@@ -171,6 +186,7 @@ public class GlazeContainerBlock extends ContainerBlock {
         if (state.getBlock() != newState.getBlock()) {
             TileEntity te = worldIn.getTileEntity(pos);
             if (te instanceof GlazeContainerTileEntity) ((GlazeContainerTileEntity)te).dropAllContents(worldIn, pos);
+            //TODO: If I can't figure out how to change the harvest tool to match the emulated block, remove the hardness and change this to place the contained block where this was
         }
     }
 
