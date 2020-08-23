@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,8 +37,9 @@ public class GlazeContainerTileEntityRenderer extends TileEntityRenderer<GlazeCo
 		if (bs == null || bs.getBlock() instanceof net.minecraft.block.AirBlock) {
             return; //TODO: need to do renderBlock with what I tried as the default "blockstate" stuff, a Honey Block-esque without the inner block and maybe recolored
         } else {
+			int lightAbove = WorldRenderer.getPackedLightmapCoords(tileEntity.getWorld(), bs, tileEntity.getPos().up());
             BlockRendererDispatcher brd = Minecraft.getInstance().getBlockRendererDispatcher();
-            brd.renderBlock(bs, matrixStack, buffer, 512, combinedOverlay, EmptyModelData.INSTANCE); //Why is this always super dark?  "combinedLight" is NOT a light level
+			brd.renderBlock(bs, matrixStack, buffer, lightAbove, combinedOverlay, EmptyModelData.INSTANCE); //Why is this always super dark?  "combinedLight" is NOT a light level
             // If I force combinedLightIn to higher values, it starts to appear "more correctly" in daylight (but not other light), but still not the right light level, and why am I being passed 0?
             // Too high, and it flips back over to rendering in all black (tried 65025)
         }
